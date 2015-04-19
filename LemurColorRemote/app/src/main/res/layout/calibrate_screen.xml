@@ -44,7 +44,8 @@
             android:text="R"
             android:textSize="20dp"
             android:layout_marginRight="8dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/light_text"/>
 
         <SeekBar
             android:layout_height="wrap_content"
@@ -69,7 +70,8 @@
             android:text="G"
             android:textSize="20dp"
             android:layout_marginRight="8dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/light_text"/>
 
         <SeekBar
             android:layout_height="wrap_content"
@@ -94,7 +96,8 @@
             android:text="B"
             android:textSize="20dp"
             android:layout_marginRight="8dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@color/light_text"/>
 
         <SeekBar
             android:layout_height="wrap_content"

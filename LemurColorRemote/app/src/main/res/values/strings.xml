@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">SMARTA Remote</string>
-    <string name="connecting">Connecting...</string>
 
     <string-array name="subjects_array">
         <item>Subject 1</item>
