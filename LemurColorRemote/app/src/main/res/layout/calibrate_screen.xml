@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/page_bg">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <Spinner
+            android:layout_marginLeft="-8dp"
+            android:layout_marginRight="16dp"
+            android:id="@+id/calibration_color_set"
+            android:layout_height="48dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"/>
+
+        <Spinner
+            android:layout_marginLeft="-8dp"
+            android:id="@+id/calibration_color"
+            android:layout_height="48dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
+    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="3"
+        android:id="@+id/objCalibrationValues">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="R"
+            android:textSize="20dp"
+            android:layout_marginRight="8dp"
+            android:textStyle="bold"/>
+
+        <SeekBar
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBarR"
+            android:max="255"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginTop="8dp"/>
+
+        <EditText
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/editTextR"
+            android:text="0"
+            android:layout_marginTop="-4dp"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="G"
+            android:textSize="20dp"
+            android:layout_marginRight="8dp"
+            android:textStyle="bold"/>
+
+        <SeekBar
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBarG"
+            android:max="255"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginTop="8dp"/>
+
+        <EditText
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/editTextG"
+            android:text="0"
+            android:layout_marginTop="-4dp"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="B"
+            android:textSize="20dp"
+            android:layout_marginRight="8dp"
+            android:textStyle="bold"/>
+
+        <SeekBar
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBarB"
+            android:max="255"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginTop="8dp"/>
+
+        <EditText
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/editTextB"
+            android:text="0"
+            android:layout_marginTop="-4dp"/>
+
+    </GridLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preview"
+            android:textSize="14dp"
+            android:textColor="@color/light_text"
+            android:layout_marginBottom="8dp">
+        </TextView>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:id="@+id/calibratePreview">
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

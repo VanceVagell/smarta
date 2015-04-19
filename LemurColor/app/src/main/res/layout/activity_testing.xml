@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    tools:context="com.vagell.lemurcolor.TrainingActivity">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/testing_dividers"
+        android:columnCount="3"
+        android:rowCount="1">
+
+        <FrameLayout
+            android:id="@+id/left_color_block"
+            android:layout_width="590dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="#ff000000"></FrameLayout>
+
+        <!-- Border -->
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"></FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/right_color_block"
+            android:layout_width="590dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="#ff000000"></FrameLayout>
+
+    </GridLayout>
+
+    <SurfaceView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/testing_camera_view"
+        android:alpha="0"/>
+</RelativeLayout>

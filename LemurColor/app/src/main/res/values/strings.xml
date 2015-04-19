@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SMARTA Screen</string>
+    <string name="waiting">Waiting for connection...</string>
+    <string name="title_activity_calibrate1">CalibrateActivity</string>
+    <string name="title_activity_training">TrainingActivity</string>
+    <string name="title_activity_testing">TestingActivity</string>
+
+</resources>

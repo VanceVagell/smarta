@@ -1,0 +1,35 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "com.vagell.lemurcolor"
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:21.0.0'
+    compile 'com.android.support:appcompat-v7:21.+'
+    compile files('libs/gdata-base-1.0.jar')
+    compile files('libs/gdata-client-1.0.jar')
+    compile files('libs/gdata-core-1.0.jar')
+    compile files('libs/gdata-docs-3.0.jar')
+    compile files('libs/gdata-spreadsheet-3.0.jar')
+    compile files('libs/guava-11.0.2.jar')
+    compile files('libs/jsr305.jar')
+    compile files('libs/mail.jar')
+    compile 'com.google.android.gms:play-services:6.1.71'
+}

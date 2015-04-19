@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SMARTA Remote</string>
+    <string name="connecting">Connecting...</string>
+
+    <string-array name="subjects_array">
+        <item>Subject 1</item>
+        <item>Subject 2</item>
+        <item>Subject 3</item>
+        <item>Subject 4</item>
+        <item>Subject 5</item>
+        <item>Subject 6</item>
+        <item>Subject 7</item>
+        <item>Subject 8</item>
+        <item>Subject 9</item>
+        <item>Subject 10</item>
+        <item>Subject 11</item>
+        <item>Subject 12</item>
+        <item>Subject 13</item>
+        <item>Subject 14</item>
+        <item>Subject 15</item>
+        <item>Subject 16</item>
+        <item>Subject 17</item>
+        <item>Subject 18</item>
+        <item>Subject 19</item>
+        <item>Subject 20</item>
+        <item>Subject 21</item>
+        <item>Subject 22</item>
+        <item>Subject 23</item>
+        <item>Subject 24</item>
+        <item>Subject 25</item>
+        <item>Subject 26</item>
+        <item>Subject 27</item>
+        <item>Subject 28</item>
+        <item>Subject 29</item>
+        <item>Subject 30</item>
+    </string-array>
+
+    <string-array name="phases_array">
+        <item>Phase 1</item>
+        <item>Phase 2</item>
+    </string-array>
+
+    <string-array name="calibration_color_sets_array">
+        <item>Training colors</item>
+        <item>Testing colors</item>
+    </string-array>
+
+    <string-array name="training_colors_array">
+        <item>Background</item>
+        <item>Object</item>
+    </string-array>
+
+    <string-array name="testing_colors_array">
+        <item>Red 1</item>
+        <item>Red 2</item>
+        <item>Red 3</item>
+        <item>Red 4</item>
+        <item>Red 5</item>
+        <item>Red 6</item>
+        <item>Red 7</item>
+        <item>Green 1</item>
+        <item>Green 2</item>
+        <item>Green 3</item>
+        <item>Green 4</item>
+        <item>Green 5</item>
+        <item>Green 6</item>
+        <item>Green 7</item>
+        <item>Gray 1</item>
+        <item>Gray 2</item>
+        <item>Gray 3</item>
+        <item>Gray 4</item>
+        <item>Gray 5</item>
+        <item>Gray 6</item>
+        <item>Gray 7</item>
+    </string-array>
+
+</resources>

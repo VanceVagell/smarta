@@ -1,0 +1,17 @@
+<resources>
+
+    <!-- theme colors -->
+    <color name="primary">#FF3949AB</color>
+    <color name="primary_dark">#FF1A237E</color>
+    <color name="accent">#FF536DFE</color>
+
+    <!-- other misc colors -->
+    <color name="black_overlay">#66000000</color>
+
+    <color name="page_bg">#FFFFFFFF</color>
+
+    <color name="dark_text">#DE000000</color>
+    <color name="light_text">#89000000</color>
+    <color name="very_light_text">#33000000</color>
+
+</resources>
