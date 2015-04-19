@@ -14,34 +14,34 @@
         android:gravity="center"
         android:text="Connecting..." />
 
-    <TabHost xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <TabHost
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/tab_host"
         android:visibility="invisible">
 
         <LinearLayout
             android:id="@+id/LinearLayout01"
             android:orientation="vertical"
-            android:layout_height="fill_parent"
-            android:layout_width="fill_parent">
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
 
             <TabWidget
                 android:id="@android:id/tabs"
                 android:layout_height="wrap_content"
-                android:layout_width="fill_parent">
+                android:layout_width="match_parent">
             </TabWidget>
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
-                android:layout_height="fill_parent"
-                android:layout_width="fill_parent">
+                android:layout_height="match_parent"
+                android:layout_width="match_parent">
 
                 <LinearLayout
                     android:orientation="vertical"
                     android:id="@+id/train_container"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                     <include layout="@layout/train_screen" />
 
@@ -50,8 +50,8 @@
                 <LinearLayout
                     android:orientation="vertical"
                     android:id="@+id/test_container"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                     <include layout="@layout/test_screen" />
 
@@ -60,8 +60,8 @@
                 <LinearLayout
                     android:orientation="vertical"
                     android:id="@+id/calibrate_container"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                     <include layout="@layout/calibrate_screen" />
 

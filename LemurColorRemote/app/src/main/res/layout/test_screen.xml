@@ -1,136 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/page_bg">
+    android:background="@color/page_bg"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/test_status"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
-
-        <TextView
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="16dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Not testing"
-            android:id="@+id/test_status"
-            android:textColor="@color/very_light_text"
-            android:textSize="28dp"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/test_details"
-            android:padding="16dp"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_marginBottom="16dp"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="Trial 1 of 7"
-                android:id="@+id/test_count"
-                android:textColor="@color/dark_text"
-                android:textSize="28dp"
-                android:layout_alignParentLeft="true"/>
-
-            <TextView
-                android:layout_marginBottom="16dp"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="00:00"
-                android:id="@+id/test_timer"
-                android:textColor="@color/dark_text"
-                android:textSize="28dp"
-                android:layout_alignParentRight="true"/>
-
-        </RelativeLayout>
-
-        <Spinner
-            android:layout_marginLeft="16dp"
-            android:id="@+id/test_subject"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"/>
-
-        <Spinner
-            android:layout_marginLeft="16dp"
-            android:id="@+id/test_phase"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <Button
-                android:layout_marginLeft="16dp"
-                android:text="Start"
-                android:id="@+id/test_start"
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_marginRight="8dp"
-                android:onClick="testStartClicked"/>
-
-            <Button
-                android:layout_marginRight="16dp"
-                android:text="Stop"
-                android:id="@+id/test_stop"
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:onClick="testStopClicked"
-                android:enabled="false"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+        android:layout_height="112dp"
+        android:layout_marginBottom="16dp"
+        android:text="Not testing"
+        android:textColor="@color/very_light_text"
+        android:textSize="28dp"
+        android:gravity="center"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="194dp"
-        android:layout_margin="16dp"
+        android:layout_height="112dp"
+        android:layout_marginBottom="16dp"
+        android:id="@+id/test_details"
+        android:visibility="gone"
+        android:gravity="center">
+
+        <TextView
+            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Trial 1 of 7"
+            android:id="@+id/test_count"
+            android:textColor="@color/dark_text"
+            android:textSize="28dp"
+            android:layout_alignParentLeft="true"/>
+
+        <TextView
+            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="00:00"
+            android:id="@+id/test_timer"
+            android:textColor="@color/dark_text"
+            android:textSize="28dp"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
+    <Spinner
+        android:id="@+id/test_subject"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="16dp"/>
+
+    <Spinner
+        android:id="@+id/test_phase"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/test_start"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:onClick="testStartClicked"
+        android:text="Start" />
+
+    <Button
+        android:id="@+id/test_stop"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:onClick="testStopClicked"
+        android:text="Stop"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="bottom">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
+            <Button
                 android:id="@+id/test_conveyor_back"
-                android:src="@drawable/ic_skip_previous_48px"
-                android:enabled="false"
-                android:onClick="conveyorBackClicked"/>
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:id="@+id/test_conveyor_back_far"
-                android:src="@drawable/ic_fast_rewind_48px"
-                android:enabled="false"
-                android:onClick="conveyorBackFarClicked"/>
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="4dp"
+                android:layout_weight="1"
+                android:onClick="conveyorBackClicked"
+                android:text="Rewind" />
 
             <Button
-                android:text="Dispense"
                 android:id="@+id/test_dispense"
+                android:layout_width="0dp"
                 android:layout_height="46dp"
-                android:layout_width="match_parent"
                 android:layout_alignParentBottom="true"
-                android:onClick="dispenseClicked"/>
+                android:layout_marginLeft="4dp"
+                android:layout_weight="1"
+                android:onClick="dispenseClicked"
+                android:text="Dispense" />
 
         </LinearLayout>
 

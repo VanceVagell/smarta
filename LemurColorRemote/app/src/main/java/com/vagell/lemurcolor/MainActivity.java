@@ -5,7 +5,10 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +19,9 @@ import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -90,6 +96,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        loadAccount();
         loadCalibration();
 
         setContentView(R.layout.main_activity);
@@ -107,14 +114,71 @@ public class MainActivity extends Activity {
         }
 
         // Restart Bluetooth to workaround bug where an old Bluetooth socket won't connect.
-        mBluetoothAdapter.disable();
-        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT_CODE);
+        if (mBluetoothAdapter.isEnabled()) {
+            BroadcastReceiver btReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    final String action = intent.getAction();
 
-        // Ask user what account to use.
+                    if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                        final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                        switch (state) {
+                            case BluetoothAdapter.STATE_OFF:
+                                Log.d("LOG", "BT disabled, enabling.");
+                                mBluetoothAdapter.enable();
+                                break;
+                            default:
+                                Log.d("LOG", "BT enabled, attempting to connect.");
+                                resetBtConnection();
+                                break;
+                        }
+                    }
+                }
+            };
+            IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+            registerReceiver(btReceiver, filter);
+            mBluetoothAdapter.disable();
+        } else {
+            mBluetoothAdapter.enable();
+        }
+
+        if (mEmailAccount == null) {
+            pickAccount();
+        } else {
+            getOAuthTokenInAsyncTask();
+        }
+    }
+
+    /**
+     * Ask user which account to use.
+     */
+    private void pickAccount() {
         Intent intent = AccountPicker.newChooseAccountIntent(null, null, new String[] { GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE }, false,
                 null, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE, null, null);
         startActivityForResult(intent, PICK_ACCOUNT_CALLBACK);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_set_colors:
+                // TODO
+                return true;
+            case R.id.action_change_account:
+                pickAccount();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void getOAuthTokenInAsyncTask() {
@@ -381,6 +445,10 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
+        resetBtConnection();
+    }
+
+    private void resetBtConnection() {
         // Reset any old connections.
         BluetoothSocket socket = ((LemurColorRemoteApplication) getApplication()).getBtSocket();
         if (socket == null || !socket.isConnected()) {
@@ -502,7 +570,8 @@ public class MainActivity extends Activity {
             Log.d("LOG", "Got OAuth2 token (via activity result): " + mOAuthToken);
         } else if (requestCode == PICK_ACCOUNT_CALLBACK) {
             mEmailAccount = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            Log.d("LOG", "Using account: " + mEmailAccount);
+            saveAccount();
+            Log.d("LOG", "Email account picking callback: " + mEmailAccount);
             getOAuthTokenInAsyncTask();
         }
     }
@@ -630,6 +699,22 @@ public class MainActivity extends Activity {
         editor.commit();
     }
 
+    private static String EMAIL_ACCOUNT_PREF = "email account";
+
+    private void loadAccount() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        mEmailAccount = settings.getString(EMAIL_ACCOUNT_PREF, null);
+        Log.d("LOG", "Using email account: " + mEmailAccount);
+    }
+
+    private void saveAccount() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(EMAIL_ACCOUNT_PREF, mEmailAccount);
+        editor.commit();
+        Log.d("LOG", "Saved email account: " + mEmailAccount);
+    }
+
     private void loadCalibration() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
@@ -681,10 +766,8 @@ public class MainActivity extends Activity {
         // Enable or disable various testing UI elements depending on whether testing is active.
         findViewById(R.id.test_subject).setEnabled(!started);
         findViewById(R.id.test_phase).setEnabled(!started);
-        findViewById(R.id.test_start).setEnabled(!started);
-        findViewById(R.id.test_stop).setEnabled(started);
-        findViewById(R.id.test_conveyor_back).setEnabled(!started);
-        findViewById(R.id.test_conveyor_back_far).setEnabled(!started);
+        findViewById(R.id.test_start).setVisibility(started ? View.GONE : View.VISIBLE);
+        findViewById(R.id.test_stop).setVisibility(started ? View.VISIBLE : View.GONE);
 
         if (!started) {
             // We don't have any data to save, wait for tablet to send it to us.
@@ -719,10 +802,10 @@ public class MainActivity extends Activity {
 
         // Enable or disable various training UI elements depending on whether training is active.
         findViewById(R.id.train_subject).setEnabled(!started);
-        findViewById(R.id.train_start).setEnabled(!started);
-        findViewById(R.id.train_stop).setEnabled(started);
-        findViewById(R.id.train_object_display_switch).setEnabled(started);
-        findViewById(R.id.train_record_switch).setEnabled(started);
+        findViewById(R.id.train_start).setVisibility(!started ? View.VISIBLE : View.GONE);
+        findViewById(R.id.train_stop).setVisibility(started ? View.VISIBLE : View.GONE);
+        findViewById(R.id.train_object_display_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
+        findViewById(R.id.train_record_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
 
         if (!started) {
             stopTrainingAndSaveVideo();
@@ -815,6 +898,7 @@ public class MainActivity extends Activity {
         sendBtMessage("CONVEYORBACK");
     }
 
+    // No longer used in client. Unlikely all 7 dispenses will happen.
     public void conveyorBackFarClicked(View v) {
         sendBtMessage("CONVEYORBACKFAR");
     }

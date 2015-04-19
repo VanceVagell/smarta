@@ -1,136 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/page_bg">
+    android:background="@color/page_bg"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/train_status"
+        android:layout_width="match_parent"
+        android:layout_height="112dp"
+        android:layout_marginBottom="16dp"
+        android:text="Not training"
+        android:textColor="@color/very_light_text"
+        android:textSize="28dp"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/train_timer"
+        android:layout_width="match_parent"
+        android:layout_height="112dp"
+        android:layout_marginBottom="16dp"
+        android:text="00:00"
+        android:textColor="@color/dark_text"
+        android:textSize="28dp"
+        android:visibility="gone"
+        android:gravity="center"/>
+
+    <Spinner
+        android:id="@+id/train_subject"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:layout_marginBottom="16dp"/>
 
-        <TextView
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="16dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Not training"
-            android:id="@+id/train_status"
-            android:textColor="@color/very_light_text"
-            android:textSize="28dp"/>
+    <Button
+        android:id="@+id/train_start"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:onClick="trainStartClicked"
+        android:text="Start" />
 
-        <TextView
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="16dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="00:00"
-            android:id="@+id/train_timer"
-            android:textColor="@color/dark_text"
-            android:textSize="28dp"
-            android:visibility="gone"/>
+    <Button
+        android:id="@+id/train_stop"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:onClick="trainStopClicked"
+        android:text="Stop"
+        android:visibility="gone" />
 
-        <Spinner
-            android:layout_marginLeft="16dp"
-            android:id="@+id/train_subject"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <Button
-                android:layout_marginLeft="16dp"
-                android:text="Start"
-                android:id="@+id/train_start"
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_marginRight="8dp"
-                android:onClick="trainStartClicked"/>
-
-            <Button
-                android:layout_marginRight="16dp"
-                android:text="Stop"
-                android:id="@+id/train_stop"
-                android:layout_height="wrap_content"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:onClick="trainStopClicked"
-                android:enabled="false"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <Switch
+        android:id="@+id/train_object_display_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginTop="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="32dp">
+        android:layout_marginBottom="16dp"
+        android:text="Object display"
+        android:visibility="invisible" />
 
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Object display"
-            android:id="@+id/train_object_display_switch"
-            android:layout_marginBottom="16dp"
-            android:enabled="false"/>
-
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Video recording"
-            android:id="@+id/train_record_switch"
-            android:enabled="false"/>
-
-    </LinearLayout>
+    <Switch
+        android:id="@+id/train_record_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Video recording"
+        android:visibility="invisible" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="116dp"
-        android:layout_margin="16dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="bottom">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
+            <Button
                 android:id="@+id/test_conveyor_back"
-                android:src="@drawable/ic_skip_previous_48px"
-                android:enabled="false"
-                android:onClick="conveyorBackClicked"/>
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:id="@+id/test_conveyor_back_far"
-                android:src="@drawable/ic_fast_rewind_48px"
-                android:enabled="false"
-                android:onClick="conveyorBackFarClicked"/>
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="4dp"
+                android:layout_weight="1"
+                android:onClick="conveyorBackClicked"
+                android:text="Rewind" />
 
             <Button
-                android:text="Dispense"
                 android:id="@+id/test_dispense"
+                android:layout_width="0dp"
                 android:layout_height="46dp"
-                android:layout_width="match_parent"
                 android:layout_alignParentBottom="true"
-                android:onClick="dispenseClicked"/>
+                android:layout_marginLeft="4dp"
+                android:layout_weight="1"
+                android:onClick="dispenseClicked"
+                android:text="Dispense" />
 
         </LinearLayout>
 
