@@ -1,8 +1,15 @@
 package com.vagell.lemurcolor;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
@@ -16,6 +23,7 @@ public class BTConnectThread extends Thread {
     private final LemurColorRemoteApplication mApplication;
     private final Handler mConnectHandler;
     private final Handler mCommHandler;
+    private final Activity mActivity;
 
     public final static int MESSAGE_BT_CONNECTED = 0;
 
@@ -24,12 +32,13 @@ public class BTConnectThread extends Thread {
      */
     private static final UUID BT_UUID = UUID.fromString("05a9d5fe-d213-4f87-bdc2-fc5d0f1935af");
 
-    public BTConnectThread(LemurColorRemoteApplication application, Handler connectHandler, Handler commHandler, BluetoothDevice device, BluetoothAdapter bluetoothAdapter) {
+    public BTConnectThread(LemurColorRemoteApplication application, Handler connectHandler, Handler commHandler, BluetoothDevice device, BluetoothAdapter bluetoothAdapter, Activity activity) {
         mConnectHandler = connectHandler;
         mCommHandler = commHandler;
         mApplication = application;
         mBluetoothAdapter = bluetoothAdapter;
         mDevice = device;
+        mActivity = activity;
         BluetoothSocket tmp = null;
 
         try {
@@ -56,15 +65,45 @@ public class BTConnectThread extends Thread {
                 mSocket = (BluetoothSocket) mDevice.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(mDevice, 1);
                 mSocket.connect();
             } catch (Exception e) {
-                Log.d("LOG", "ERROR: Bluetooth fallback failed. Could not establish BT connection.");
+                // TODO would love to restart app if bluetooth fails, but we get a couple intermittent failures even during a normal run, so can't :(
+                // An improvement would be to just silently keep retrying the connection when it fails. Right now it may eventually fail permanently.
+//                if (mActivity != null) {
+//                    mActivity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            new AlertDialog.Builder(mActivity)
+//                                    .setTitle("Can't connect")
+//                                    .setMessage("Can't connect to tablet via Bluetooth. Make sure phone and tablet are paired, then try again.")
+//                                    .setCancelable(false)
+//                                    .setPositiveButton("Try again", new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which) {
+//                                            // Restarts the app
+//                                            Intent newActivity = new Intent(mActivity, MainActivity.class);
+//                                            int mPendingIntentId = 123456;
+//                                            PendingIntent mPendingIntent = PendingIntent.getActivity(mActivity, mPendingIntentId, newActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+//                                            AlarmManager mgr = (AlarmManager) mActivity.getSystemService(Context.ALARM_SERVICE);
+//                                            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+//                                            System.exit(0);
+//                                        }
+//                                    })
+//                                    .show();
+//                        }
+//                    });
+//                }
+
+                Log.d("LOG","ERROR: Bluetooth fallback failed. Could not establish BT connection.");
                 e.printStackTrace();
 
                 // Unable to connect; close the socket and get out
                 try {
                     mSocket.close();
-                } catch (IOException closeException) {
+                }
+
+                catch(IOException closeException) {
                     closeException.printStackTrace();
                 }
+
                 return;
             }
         }

@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -63,12 +64,13 @@ public class MainActivity extends Activity {
     private static final String COLOR_B = "B";
 
     private String mCalibrationMode = CALIBRATION_MODE_NONE;
+    private boolean mIsTrainingTab = true;
+
 
     /**
      * Custom code for our request to enable Bluetooth. Value doesn't matter, we get it back
      * in the callback.
      */
-    private static final int REQUEST_ENABLE_BT_CODE = 9484;
     private static final int OAUTH_CALLBACK = 2389;
     private static final int PICK_ACCOUNT_CALLBACK = 8403;
 
@@ -171,13 +173,30 @@ public class MainActivity extends Activity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_set_colors:
-                // TODO
+                // TODO have a calibration activity instead. I'm doing this to avoid the advanced BT service handling
+                // needed when you have >1 activity (as in LemurColor).
+                setCalibrating(true);
                 return true;
             case R.id.action_change_account:
                 pickAccount();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    // TODO extract into a calibration activity. complex because BT stack needs updating to work across activities.
+    private void setCalibrating(boolean calibrating) {
+        findViewById(R.id.train_container).setVisibility(calibrating ? View.GONE : (mIsTrainingTab ? View.VISIBLE : View.GONE));
+        findViewById(R.id.test_container).setVisibility(calibrating ? View.GONE : (!mIsTrainingTab ? View.VISIBLE : View.GONE));
+        findViewById(R.id.calibrate_container).setVisibility(calibrating ? View.VISIBLE : View.GONE);
+        findViewById(android.R.id.tabs).setVisibility(calibrating ? View.GONE : View.VISIBLE);
+
+        if (calibrating) {
+            setTitle("Colors");
+            sendBtMessage("GOTO Calibrate1 " + new Gson().toJson(mColorBeingCalibrated));
+        } else {
+            setTitle(R.string.app_name);
         }
     }
 
@@ -416,11 +435,6 @@ public class MainActivity extends Activity {
         spec.setIndicator("Test");
         mTabs.addTab(spec);
 
-        spec = mTabs.newTabSpec("Calibrate");
-        spec.setContent(R.id.calibrate_container);
-        spec.setIndicator("Calibrate");
-        mTabs.addTab(spec);
-
         mTabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
@@ -428,13 +442,12 @@ public class MainActivity extends Activity {
 
                 switch (tabIdx) {
                     case 0:
+                        mIsTrainingTab = true;
                         sendBtMessage("GOTO TrainingOff");
                         break;
                     case 1:
+                        mIsTrainingTab = false;
                         sendBtMessage("GOTO Testing " + new Gson().toJson(mColorMap));
-                        break;
-                    case 2:
-                        sendBtMessage("GOTO Calibrate1 " + new Gson().toJson(mColorBeingCalibrated));
                         break;
                 }
             }
@@ -486,7 +499,7 @@ public class MainActivity extends Activity {
                     }
                 };
                 mBtMessageHandler = new BTMessageHandler();
-                mBtConnectThread = new BTConnectThread((LemurColorRemoteApplication) getApplication(), connectHandler, mBtMessageHandler, firstBluetoothDevice, mBluetoothAdapter);
+                mBtConnectThread = new BTConnectThread((LemurColorRemoteApplication) getApplication(), connectHandler, mBtMessageHandler, firstBluetoothDevice, mBluetoothAdapter, this);
                 mBtConnectThread.start();
             }
         }
@@ -901,5 +914,9 @@ public class MainActivity extends Activity {
     // No longer used in client. Unlikely all 7 dispenses will happen.
     public void conveyorBackFarClicked(View v) {
         sendBtMessage("CONVEYORBACKFAR");
+    }
+
+    public void closeCalibrationClicked(View v) {
+        setCalibrating(false);
     }
 }

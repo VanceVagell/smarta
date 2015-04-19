@@ -7,29 +7,17 @@
     android:padding="16dp"
     android:background="@color/page_bg">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+    <Spinner
+        android:id="@+id/calibration_color_set"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
+        android:layout_width="match_parent"
+        android:layout_marginBottom="16dp"/>
 
-        <Spinner
-            android:layout_marginLeft="-8dp"
-            android:layout_marginRight="16dp"
-            android:id="@+id/calibration_color_set"
-            android:layout_height="48dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"/>
-
-        <Spinner
-            android:layout_marginLeft="-8dp"
-            android:id="@+id/calibration_color"
-            android:layout_height="48dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
-
+    <Spinner
+        android:id="@+id/calibration_color"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="16dp"/>
 
     <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -120,8 +108,10 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="bottom">
 
         <TextView
             android:layout_width="wrap_content"
@@ -135,10 +125,18 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="match_parent"
             android:id="@+id/calibratePreview">
         </LinearLayout>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/close_calibration"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:onClick="closeCalibrationClicked"
+        android:text="Done"
+        android:layout_marginTop="16dp"/>
 
 </LinearLayout>
