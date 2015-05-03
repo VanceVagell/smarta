@@ -44,7 +44,7 @@ public class TrainingDataSaverThread extends Thread {
         String backupData = mSubjectName + "," + mStartTime + "," + mElapsedTime + "\r\n";
 
         try {
-            if (mService == null) {
+            if (mService == null || mListFeedUrl == null) {
                 mService = new SpreadsheetService("SMARTA-v1");
                 mService.setAuthSubToken(mOAuthToken);
 

@@ -58,7 +58,7 @@ public class TrialDataSaverThread extends Thread {
             mTrialData.leftColor.toString() + "," + mTrialData.rightColor.toString() + "," + mTrialData.timedOut + "," + ((mTrialData.timedOut) ? "-" : "" + mTrialData.subjectChoseCorrectly) + "\r\n";
 
         try {
-            if (mService == null) {
+            if (mService == null || mListFeedUrl == null) {
                 mService = new SpreadsheetService("SMARTA-v1");
                 mService.setAuthSubToken(mOAuthToken);
 
