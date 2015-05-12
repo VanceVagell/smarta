@@ -127,6 +127,7 @@ public abstract class BaseActivity extends Activity implements SurfaceHolder.Cal
         mRecorder.setVideoSize(640, 480);
         mRecorder.setVideoFrameRate(30);
         mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
+        mRecorder.setOrientationHint(180);
         try {
             mRecorder.prepare();
         } catch (IllegalStateException e) {
@@ -136,6 +137,7 @@ public abstract class BaseActivity extends Activity implements SurfaceHolder.Cal
         }
 
         mRecorder.start();
+
         Log.d("LOG", "Started video recording of file: " + mVideoFile.getAbsolutePath());
     }
 

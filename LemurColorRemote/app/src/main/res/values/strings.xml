@@ -4,36 +4,37 @@
     <string name="app_name">SMARTA Remote</string>
 
     <string-array name="subjects_array">
+        <item>Amor Jr.</item>
+        <item>Antlia</item>
+        <item>Avior</item>
+        <item>Borealis</item>
+        <item>Carina</item>
+        <item>Carme</item>
+        <item>Comet</item>
+        <item>Cordelia</item>
+        <item>Eros JR</item>
+        <item>Galaxy</item>
+        <item>Grace</item>
+        <item>Halley</item>
+        <item>Hebe</item>
+        <item>Herschel</item>
+        <item>Hunter</item>
+        <item>Josephine</item>
+        <item>Junior</item>
+        <item>Kizzy</item>
+        <item>Krok</item>
+        <item>Magellan</item>
+        <item>Minias</item>
+        <item>Pandora</item>
+        <item>Puck</item>
+        <item>Pyxis II</item>
+        <item>Rees</item>
+        <item>Titan</item>
         <item>Subject 1</item>
         <item>Subject 2</item>
         <item>Subject 3</item>
         <item>Subject 4</item>
         <item>Subject 5</item>
-        <item>Subject 6</item>
-        <item>Subject 7</item>
-        <item>Subject 8</item>
-        <item>Subject 9</item>
-        <item>Subject 10</item>
-        <item>Subject 11</item>
-        <item>Subject 12</item>
-        <item>Subject 13</item>
-        <item>Subject 14</item>
-        <item>Subject 15</item>
-        <item>Subject 16</item>
-        <item>Subject 17</item>
-        <item>Subject 18</item>
-        <item>Subject 19</item>
-        <item>Subject 20</item>
-        <item>Subject 21</item>
-        <item>Subject 22</item>
-        <item>Subject 23</item>
-        <item>Subject 24</item>
-        <item>Subject 25</item>
-        <item>Subject 26</item>
-        <item>Subject 27</item>
-        <item>Subject 28</item>
-        <item>Subject 29</item>
-        <item>Subject 30</item>
     </string-array>
 
     <string-array name="phases_array">

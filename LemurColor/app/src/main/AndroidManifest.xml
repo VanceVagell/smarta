@@ -20,7 +20,7 @@
             android:name="com.vagell.lemurcolor.FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:screenOrientation="landscape"
+            android:screenOrientation="reverseLandscape"
             android:theme="@style/FullscreenTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
             android:name=".CalibrateActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_calibrate1"
-            android:screenOrientation="landscape"
+            android:screenOrientation="reverseLandscape"
             android:theme="@style/FullscreenTheme" >
         </activity>
 
@@ -51,12 +51,14 @@
 
         <activity
             android:name="com.vagell.lemurcolor.TrainingActivity"
-            android:label="@string/title_activity_training" >
+            android:label="@string/title_activity_training"
+            android:screenOrientation="reverseLandscape">
         </activity>
 
         <activity
             android:name="com.vagell.lemurcolor.TestingActivity"
-            android:label="@string/title_activity_testing" >
+            android:label="@string/title_activity_testing"
+            android:screenOrientation="reverseLandscape">
         </activity>
     </application>
 
