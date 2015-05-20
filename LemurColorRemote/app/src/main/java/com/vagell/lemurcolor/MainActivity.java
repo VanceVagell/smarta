@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -25,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -65,6 +67,7 @@ public class MainActivity extends Activity {
 
     private String mCalibrationMode = CALIBRATION_MODE_NONE;
     private boolean mIsTrainingTab = true;
+    private int mDispenseRemaining = 7; // how many food rewards are left to dispense
 
 
     /**
@@ -895,8 +898,14 @@ public class MainActivity extends Activity {
         setTrainingStarted(false);
     }
 
+    private static final int DISPENSE_VIBRATE_MS = 500;
+
     public void dispenseClicked(View v) {
         sendBtMessage("DISPENSE");
+        ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(DISPENSE_VIBRATE_MS);
+        mDispenseRemaining--;
+        mDispenseRemaining = Math.max(0, mDispenseRemaining);
+        ((Button) findViewById(R.id.test_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
     }
 
     public void testStartClicked(View v) {
@@ -909,6 +918,10 @@ public class MainActivity extends Activity {
 
     public void conveyorBackClicked(View v) {
         sendBtMessage("CONVEYORBACK");
+        ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(DISPENSE_VIBRATE_MS);
+        mDispenseRemaining++;
+        mDispenseRemaining = Math.min(7, mDispenseRemaining);
+        ((Button) findViewById(R.id.test_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
     }
 
     // No longer used in client. Unlikely all 7 dispenses will happen.
