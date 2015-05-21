@@ -67,8 +67,8 @@ public class MainActivity extends Activity {
 
     private String mCalibrationMode = CALIBRATION_MODE_NONE;
     private boolean mIsTrainingTab = true;
-    private int mDispenseRemaining = 7; // how many food rewards are left to dispense
-
+    private static final int FULL_DISPENSE_COUNT = 7;
+    private int mDispenseRemaining = FULL_DISPENSE_COUNT; // how many food rewards are left to dispense
 
     /**
      * Custom code for our request to enable Bluetooth. Value doesn't matter, we get it back
@@ -182,6 +182,9 @@ public class MainActivity extends Activity {
                 return true;
             case R.id.action_change_account:
                 pickAccount();
+                return true;
+            case R.id.action_reset_dispense_count:
+                setDispenseRemaining(FULL_DISPENSE_COUNT);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -903,8 +906,17 @@ public class MainActivity extends Activity {
     public void dispenseClicked(View v) {
         sendBtMessage("DISPENSE");
         ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(DISPENSE_VIBRATE_MS);
-        mDispenseRemaining--;
-        mDispenseRemaining = Math.max(0, mDispenseRemaining);
+        setDispenseRemaining(mDispenseRemaining - 1);
+    }
+
+    private void setDispenseRemaining(int dispenseRemaining) {
+        if (dispenseRemaining < 0) {
+            mDispenseRemaining = 0;
+        } else if (dispenseRemaining > FULL_DISPENSE_COUNT) {
+            mDispenseRemaining = FULL_DISPENSE_COUNT;
+        } else {
+            mDispenseRemaining = dispenseRemaining;
+        }
         ((Button) findViewById(R.id.test_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
     }
 
@@ -919,9 +931,7 @@ public class MainActivity extends Activity {
     public void conveyorBackClicked(View v) {
         sendBtMessage("CONVEYORBACK");
         ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(DISPENSE_VIBRATE_MS);
-        mDispenseRemaining++;
-        mDispenseRemaining = Math.min(7, mDispenseRemaining);
-        ((Button) findViewById(R.id.test_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
+        setDispenseRemaining(mDispenseRemaining + 1);
     }
 
     // No longer used in client. Unlikely all 7 dispenses will happen.

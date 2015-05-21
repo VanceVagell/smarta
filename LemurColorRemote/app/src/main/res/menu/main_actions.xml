@@ -6,4 +6,7 @@
     <item android:id="@+id/action_change_account"
         android:title="Change account"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_reset_dispense_count"
+        android:title="Reset food count"
+        app:showAsAction="never"/>
 </menu>
