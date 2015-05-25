@@ -64,14 +64,20 @@ public class BTMessageHandler extends Handler {
                             RGBColor bgColor = colorMap.get("Training colors Background");
                             RGBColor objColor = colorMap.get("Training colors Object");
 
-                            intent = new Intent(mActivity, TrainingActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                            intent.putExtra(TrainingActivity.TRAINING_OBJ_COLOR_EXTRA, objColor.toIntColor());
-                            intent.putExtra(TrainingActivity.TRAINING_BG_COLOR_EXTRA, bgColor.toIntColor());
-                            mActivity.startActivity(intent);
+                            if (mActivity.getClass() == TrainingActivity.class) {
+                                ((TrainingActivity) mActivity).setObjColor(objColor.toIntColor());
+                                ((TrainingActivity) mActivity).setBgColor(bgColor.toIntColor());
+                                ((TrainingActivity) mActivity).setObjVisible(true);
+                            } else {
+                                intent = new Intent(mActivity, TrainingActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                intent.putExtra(TrainingActivity.TRAINING_OBJ_COLOR_EXTRA, objColor.toIntColor());
+                                intent.putExtra(TrainingActivity.TRAINING_BG_COLOR_EXTRA, bgColor.toIntColor());
+                                mActivity.startActivity(intent);
+                            }
                         } else if (messageStr.contains("TrainingOff")) {
                             if (mActivity.getClass() == TrainingActivity.class) {
-                                ((TrainingActivity) mActivity).setVisible(false);
+                                ((TrainingActivity) mActivity).setObjVisible(false);
                             } else {
                                 intent = new Intent(mActivity, TrainingActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -114,6 +120,20 @@ public class BTMessageHandler extends Handler {
                                 ((TrainingActivity) mActivity).stopRecording();
                             } else if (mActivity.getClass() == TestingActivity.class) {
                                 ((TestingActivity) mActivity).stopRecording();
+                            }
+                        }
+                    } else if (messageStr.contains("ANIM")) {
+                        if (messageStr.contains("Start")) {
+                            if (mActivity.getClass() == TrainingActivity.class) {
+                                ((TrainingActivity) mActivity).setAnimating(true);
+                            } else {
+                                Log.d("Log", "WARNING: Tried to start animating while not in TrainingActivity.");
+                            }
+                        } else {
+                            if (mActivity.getClass() == TrainingActivity.class) {
+                                ((TrainingActivity) mActivity).setAnimating(false);
+                            } else {
+                                Log.d("Log", "WARNING: Tried to stop animating while not in TrainingActivity.");
                             }
                         }
                     } else if (messageStr.startsWith("DISPENSE")) {

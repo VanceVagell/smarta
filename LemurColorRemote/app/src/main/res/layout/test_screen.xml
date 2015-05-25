@@ -104,7 +104,7 @@
                 android:layout_marginLeft="4dp"
                 android:layout_weight="1"
                 android:onClick="dispenseClicked"
-                android:text="Dispense" />
+                android:text="Dispense (7)" />
 
         </LinearLayout>
 

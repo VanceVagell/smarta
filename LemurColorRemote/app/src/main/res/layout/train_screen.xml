@@ -59,9 +59,18 @@
         android:visibility="invisible" />
 
     <Switch
+        android:id="@+id/train_object_anim_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Object animation"
+        android:visibility="invisible" />
+
+    <Switch
         android:id="@+id/train_record_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:text="Video recording"
         android:visibility="invisible" />
 
@@ -78,7 +87,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/test_conveyor_back"
+                android:id="@+id/train_conveyor_back"
                 android:layout_width="0dp"
                 android:layout_height="46dp"
                 android:layout_alignParentBottom="true"
@@ -88,7 +97,7 @@
                 android:text="Rewind" />
 
             <Button
-                android:id="@+id/test_dispense"
+                android:id="@+id/train_dispense"
                 android:layout_width="0dp"
                 android:layout_height="46dp"
                 android:layout_alignParentBottom="true"

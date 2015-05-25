@@ -29,7 +29,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -269,6 +268,19 @@ public class MainActivity extends Activity {
                 }
 
                 setTrainingObjectDisplayed(isChecked);
+            }
+        });
+
+        // Listen for changes in object animation on/off
+        Switch objAnimSwitch = (Switch) findViewById(R.id.train_object_anim_switch);
+        objAnimSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (!mTrainingStarted) {
+                    return;
+                }
+
+                setTrainingObjectAnimated(isChecked);
             }
         });
 
@@ -824,11 +836,13 @@ public class MainActivity extends Activity {
         findViewById(R.id.train_start).setVisibility(!started ? View.VISIBLE : View.GONE);
         findViewById(R.id.train_stop).setVisibility(started ? View.VISIBLE : View.GONE);
         findViewById(R.id.train_object_display_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
+        findViewById(R.id.train_object_anim_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
         findViewById(R.id.train_record_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
 
         if (!started) {
             stopTrainingAndSaveVideo();
             setTrainingObjectDisplayed(false);
+            setTrainingObjectAnimated(false);
             setMainTabsEnabled(true);
             saveTrainingData(); // Save before stopping the timer.
             findViewById(R.id.train_status).setVisibility(View.VISIBLE);
@@ -837,6 +851,7 @@ public class MainActivity extends Activity {
         } else {
             setMainTabsEnabled(false);
             setTrainingObjectDisplayed(false);
+            setTrainingObjectAnimated(false);
             findViewById(R.id.train_status).setVisibility(View.GONE);
             findViewById(R.id.train_timer).setVisibility(View.VISIBLE);
             mTrainingTimer.start();
@@ -859,6 +874,21 @@ public class MainActivity extends Activity {
             sendBtMessage("GOTO TrainingOn " + new Gson().toJson(mColorMap));
         } else {
             sendBtMessage("GOTO TrainingOff");
+        }
+    }
+
+    private void setTrainingObjectAnimated(boolean animated) {
+        // Make sure switch matches this state.
+        Switch trainingObjectAnimatedSwitch = (Switch) findViewById(R.id.train_object_anim_switch);
+        if (trainingObjectAnimatedSwitch.isChecked() != animated) {
+            trainingObjectAnimatedSwitch.setChecked(animated);
+        }
+
+        if (animated) {
+            // TODO extract all these sendBtMessage calls to a model object that syncs via BT
+            sendBtMessage("ANIM Start");
+        } else {
+            sendBtMessage("ANIM Stop");
         }
     }
 
@@ -917,6 +947,7 @@ public class MainActivity extends Activity {
         } else {
             mDispenseRemaining = dispenseRemaining;
         }
+        ((Button) findViewById(R.id.train_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
         ((Button) findViewById(R.id.test_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
     }
 
