@@ -138,7 +138,7 @@ public class TrainingDataSaverThread extends Thread {
                 public void run() {
                     new AlertDialog.Builder(mActivity)
                             .setTitle("Can't save online")
-                            .setMessage("Check phone's internet connection, then restart app. Data saved to text file for now.")
+                            .setMessage("Check internet connection then restart app. Data saved to text file.")
                             .setCancelable(false)
                             .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                                 @Override
@@ -152,9 +152,9 @@ public class TrainingDataSaverThread extends Thread {
         }
     }
 
-    private static final String BACKUP_TEXT_FILE_NAME = "smarta-backup-training-data.txt";
+    public static final String BACKUP_TEXT_FILE_NAME = "smarta-backup-training-data.txt";
 
-    private void appendBackupData(String backupData) {
+    private synchronized void appendBackupData(String backupData) {
         Log.d("LOG", "Saving backup data to text file, can't access online spreadsheet.");
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         if (!dir.exists()) {

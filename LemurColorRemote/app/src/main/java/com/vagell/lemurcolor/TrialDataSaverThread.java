@@ -40,7 +40,8 @@ public class TrialDataSaverThread extends Thread {
     private static URL mListFeedUrl = null;
 
     private static final String SPREADSHEET_NAME = "Lemur data from SMARTA"; // TODO make configurable in UI
-    private SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss zzz");
+    public static final String TIME_FORMAT_STRING = "EEE MMM dd yyyy HH:mm:ss zzz"; // Exposing this statically is a compromise because SimpleDateFormat isn't threadsafe.
+    private SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat(TIME_FORMAT_STRING);
 
     public TrialDataSaverThread(Activity activity, String subjectName, String phase, TrialData trialData, String oAuthToken, Date sessionStartTime) {
         mActivity = activity;
@@ -158,7 +159,7 @@ public class TrialDataSaverThread extends Thread {
                 public void run() {
                     new AlertDialog.Builder(mActivity)
                             .setTitle("Can't save online")
-                            .setMessage("Check phone's internet connection, then restart app. Data saved to text file for now.")
+                            .setMessage("Check internet connection then restart app. Data saved to text file.")
                             .setCancelable(false)
                             .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                                 @Override
@@ -172,9 +173,9 @@ public class TrialDataSaverThread extends Thread {
         }
     }
 
-    private static final String BACKUP_TEXT_FILE_NAME = "smarta-backup-test-data.txt";
+    public static final String BACKUP_TEXT_FILE_NAME = "smarta-backup-test-data.txt";
 
-    private void appendBackupData(String backupData) {
+    private synchronized void appendBackupData(String backupData) {
         Log.d("LOG", "Saving backup data to text file, can't access online spreadsheet.");
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         if (!dir.exists()) {

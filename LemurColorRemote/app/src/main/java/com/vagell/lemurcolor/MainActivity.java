@@ -2,16 +2,19 @@ package com.vagell.lemurcolor;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -43,6 +46,9 @@ import com.google.android.gms.common.AccountPicker;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -202,6 +208,7 @@ public class MainActivity extends Activity {
             sendBtMessage("GOTO Calibrate1 " + new Gson().toJson(mColorBeingCalibrated));
         } else {
             setTitle(R.string.app_name);
+            gotoTab(mIsTrainingTab ? 0 : 1); // Trigger host tabs entry flow (e.g. show testing screen on tablet)
         }
     }
 
@@ -217,6 +224,10 @@ public class MainActivity extends Activity {
                     // TODO protect mOAuth token in synchronized get/set, or implement onPostExecute in UI thread.
                     mOAuthToken = GoogleAuthUtil.getToken(activity, mEmailAccount, SHEETS_SCOPE, null /* extras */);
                     Log.d("LOG", "Got OAuth2 token: " + mOAuthToken);
+
+                    // We know we have internet access if we got an OAuth token. Check if we have
+                    // any backup data stored locally that we could upload.
+                    checkForBackupDataInAsyncTask();
                 } catch (UserRecoverableAuthException e) {
                     startActivityForResult(e.getIntent(), OAUTH_CALLBACK);
                 } catch (IOException e) {
@@ -231,6 +242,143 @@ public class MainActivity extends Activity {
 
         task.execute((Void) null);
     }
+
+
+    private void checkForBackupDataInAsyncTask() {
+        final Activity activity = this;
+        AsyncTask task = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+                File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+                if (dir.exists()) {
+                    final File trainingBackupFile = new File(dir, TrainingDataSaverThread.BACKUP_TEXT_FILE_NAME);
+                    final File testingBackupFile = new File(dir, TrialDataSaverThread.BACKUP_TEXT_FILE_NAME);
+                    final boolean trainingDataExists = trainingBackupFile.exists();
+                    final boolean testingDataExists = testingBackupFile.exists();
+                    if (trainingDataExists || testingDataExists) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                new AlertDialog.Builder(activity)
+                                        .setTitle("Upload backup data?")
+                                        .setMessage("There's backup data on this phone that can be saved online.")
+                                        .setCancelable(true)
+                                        .setPositiveButton("Upload", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                uploadBackupData(trainingDataExists, trainingBackupFile, testingDataExists, testingBackupFile);
+                                                Log.d("Log", "Uploading training data...");
+                                            }
+                                        })
+                                        .show();
+                            }
+                        });
+                    }
+                }
+
+                return null;
+            }
+        };
+
+        task.execute((Void) null);
+    }
+
+
+    // TODO extract this stuff to TrainingDataSaverThread and TrialDataSaverThread
+    // TODO now that data isn't expected to be hand-pasted from backup files, change to JSON instead of CSV to simplify this parsing
+    private void uploadBackupData(boolean trainingDataExists, File trainingBackupFile, boolean testingDataExists, File testingBackupFile) {
+        boolean problem = false;
+        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        if (trainingDataExists) {
+            // Move the backup file to a new name, if any rows fail they'll drop back into the normal file.
+            File oldBackupFile = new File(dir, TrainingDataSaverThread.BACKUP_TEXT_FILE_NAME.replace(".txt", ".old-" + new Date().getTime() + ".txt")); // TODO break suffix out as constant
+            trainingBackupFile.renameTo(oldBackupFile);
+
+            BufferedReader inputStream = null;
+            try {
+                inputStream = new BufferedReader(new FileReader(oldBackupFile.getAbsoluteFile()));
+                while (true) {
+                    String line = inputStream.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    String[] values = line.split(",");
+                    if (values.length != 3) { // 3 expected values, see TrainingDataSaverThread
+                        Log.d("Log", "ERROR: Backup training data has corrupt entry: '" + line + "'");
+                        continue;
+                    }
+                    new TrainingDataSaverThread(this, values[0] /* subject */, values[1] /* timestamp */, values[2] /* duration */, mOAuthToken).start();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    inputStream.close();
+                } catch (Exception e2) { }
+                problem = true;
+            }
+        }
+
+        if (testingDataExists) {
+            // Move the backup file to a new name, if any rows fail they'll drop back into the normal file.
+            File oldBackupFile = new File(dir, TrialDataSaverThread.BACKUP_TEXT_FILE_NAME.replace(".txt", ".old-" + new Date().getTime() + ".txt")); // TODO break suffix out as constant
+            testingBackupFile.renameTo(oldBackupFile);
+
+            BufferedReader inputStream = null;
+            try {
+                inputStream = new BufferedReader(new FileReader(oldBackupFile.getAbsoluteFile()));
+                while (true) {
+                    String line = inputStream.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    String[] values = line.split(",");
+                    if (values.length != 9) { // 9 expected values, see TrialDataSaverThread
+                        Log.d("Log", "ERROR: Backup testing data has corrupt entry: '" + line + "'");
+                        continue;
+                    }
+                    TrialData trialData = new TrialData(Integer.parseInt(values[3]) - 1); // adjust to be 0-based
+                    trialData.duration = Integer.parseInt(values[4]);
+                    RGBColor leftColor = new RGBColor();
+                    leftColor.r = Integer.parseInt(values[5].substring(3, values[5].indexOf("G:") - 1));
+                    leftColor.g = Integer.parseInt(values[5].substring(values[5].indexOf("G:") + 3, values[5].indexOf("B:") - 1));
+                    leftColor.b = Integer.parseInt(values[5].substring(values[5].indexOf("B:") + 3));
+                    trialData.leftColor = leftColor;
+                    RGBColor rightColor = new RGBColor();
+                    rightColor.r = Integer.parseInt(values[6].substring(3, values[6].indexOf("G:") - 1));
+                    rightColor.g = Integer.parseInt(values[6].substring(values[6].indexOf("G:") + 3, values[6].indexOf("B:") - 1));
+                    rightColor.b = Integer.parseInt(values[6].substring(values[6].indexOf("B:") + 3));
+                    trialData.rightColor = rightColor;
+                    trialData.timedOut = Boolean.parseBoolean(values[7]);
+                    trialData.subjectChoseCorrectly = Boolean.parseBoolean(values[8]);
+                    Date sessionStartTime = new SimpleDateFormat(TrialDataSaverThread.TIME_FORMAT_STRING).parse(values[2]);
+                    new TrialDataSaverThread(this,
+                            values[0] /* subject */, values[1] /* phase */, trialData,
+                            mOAuthToken, sessionStartTime).start();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    inputStream.close();
+                } catch (Exception e2) { }
+                problem = true;
+            }
+        }
+
+        showToast(problem ? "Problem uploading data" : "Backup data uploaded");
+    }
+
+
+    private void showToast(String msg) {
+        final Activity activity = this;
+        final String finalMsg = new String(msg);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(activity, finalMsg, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     /**
      * Whether user hit the "Start" button to begin training.
@@ -457,20 +605,25 @@ public class MainActivity extends Activity {
             @Override
             public void onTabChanged(String tabId) {
                 int tabIdx = mTabs.getCurrentTab();
-
-                switch (tabIdx) {
-                    case 0:
-                        mIsTrainingTab = true;
-                        sendBtMessage("GOTO TrainingOff");
-                        break;
-                    case 1:
-                        mIsTrainingTab = false;
-                        sendBtMessage("GOTO Testing " + new Gson().toJson(mColorMap));
-                        break;
-                }
+                gotoTab(tabIdx);
             }
         });
     }
+
+
+    private void gotoTab(int tabIdx) {
+        switch (tabIdx) {
+            case 0:
+                mIsTrainingTab = true;
+                sendBtMessage("GOTO TrainingOff");
+                break;
+            case 1:
+                mIsTrainingTab = false;
+                sendBtMessage("GOTO Testing " + new Gson().toJson(mColorMap));
+                break;
+        }
+    }
+
 
     @Override
     protected void onResume() {
@@ -792,7 +945,9 @@ public class MainActivity extends Activity {
 
     private void setTestingStarted(boolean started) {
         mTestingStarted = started;
-        mSessionStartTime = new Date();
+        if (started) {
+            mSessionStartTime = new Date();
+        }
 
         // Enable or disable various testing UI elements depending on whether testing is active.
         findViewById(R.id.test_subject).setEnabled(!started);
