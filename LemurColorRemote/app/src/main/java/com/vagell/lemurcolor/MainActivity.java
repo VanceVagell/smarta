@@ -350,7 +350,7 @@ public class MainActivity extends Activity {
                     trialData.rightColor = rightColor;
                     trialData.timedOut = Boolean.parseBoolean(values[7]);
                     trialData.subjectChoseCorrectly = Boolean.parseBoolean(values[8]);
-                    Date sessionStartTime = new SimpleDateFormat(TrialDataSaverThread.TIME_FORMAT_STRING).parse(values[2]);
+                    Date sessionStartTime = new SimpleDateFormat(RenderedTimer.TIME_FORMAT_STRING).parse(values[2]);
                     new TrialDataSaverThread(this,
                             values[0] /* subject */, values[1] /* phase */, trialData,
                             mOAuthToken, sessionStartTime).start();

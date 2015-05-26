@@ -40,8 +40,7 @@ public class TrialDataSaverThread extends Thread {
     private static URL mListFeedUrl = null;
 
     private static final String SPREADSHEET_NAME = "Lemur data from SMARTA"; // TODO make configurable in UI
-    public static final String TIME_FORMAT_STRING = "EEE MMM dd yyyy HH:mm:ss zzz"; // Exposing this statically is a compromise because SimpleDateFormat isn't threadsafe.
-    private SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat(TIME_FORMAT_STRING);
+    private SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat(RenderedTimer.TIME_FORMAT_STRING);
 
     public TrialDataSaverThread(Activity activity, String subjectName, String phase, TrialData trialData, String oAuthToken, Date sessionStartTime) {
         mActivity = activity;

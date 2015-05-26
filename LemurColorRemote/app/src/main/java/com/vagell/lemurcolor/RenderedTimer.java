@@ -17,7 +17,8 @@ public class RenderedTimer {
     private Date mStartTime = null;
     private Activity mActivity = null;
     private TextView mTextView;
-    private SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss zzz");
+    public static final String TIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss zzz";
+    private SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat(TIME_FORMAT_STRING);
     private int mSecondsToCountDown = 0;
     private boolean mCountDown = false;
 
