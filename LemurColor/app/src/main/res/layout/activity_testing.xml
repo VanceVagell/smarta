@@ -14,13 +14,18 @@
         android:columnCount="3"
         android:rowCount="1">
 
-        <FrameLayout
-            android:id="@+id/left_color_block"
+        <RelativeLayout
             android:layout_width="590dp"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="#ff000000"></FrameLayout>
+            android:layout_height="match_parent">
+            <FrameLayout
+                android:id="@+id/left_color_block"
+                android:layout_width="400dp"
+                android:layout_height="400dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="#ff000000"></FrameLayout>
+        </RelativeLayout>
+
 
         <!-- Border -->
         <FrameLayout
@@ -29,13 +34,17 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"></FrameLayout>
 
-        <FrameLayout
-            android:id="@+id/right_color_block"
+        <RelativeLayout
             android:layout_width="590dp"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="#ff000000"></FrameLayout>
+            android:layout_height="match_parent">
+            <FrameLayout
+                android:id="@+id/right_color_block"
+                android:layout_width="400dp"
+                android:layout_height="400dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="#ff000000"></FrameLayout>
+        </RelativeLayout>
 
     </GridLayout>
 

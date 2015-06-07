@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -44,6 +45,9 @@ public abstract class BaseActivity extends Activity implements SurfaceHolder.Cal
 
         // Hide system bars
         findViewById(android.R.id.content).setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+        // Enter kiosk mode (can't exit app normally)
+//        startLockTask(); TODO use this on Lollipop (5.0+) tablets, not supported on lower.
 
         // Go to full screen brightness
         WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
