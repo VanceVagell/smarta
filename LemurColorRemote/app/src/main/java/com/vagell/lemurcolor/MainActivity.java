@@ -12,6 +12,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +21,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Vibrator;
+import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -75,12 +78,15 @@ public class MainActivity extends Activity {
     private static final int FULL_DISPENSE_COUNT = 7;
     private int mDispenseRemaining = FULL_DISPENSE_COUNT; // how many food rewards are left to dispense
 
+    private static String mSpreadsheetName = null;
+
     /**
      * Custom code for our request to enable Bluetooth. Value doesn't matter, we get it back
      * in the callback.
      */
     private static final int OAUTH_CALLBACK = 2389;
     private static final int PICK_ACCOUNT_CALLBACK = 8403;
+    private static final int PICK_SPREADSHEET_CALLBACK = 3498;
 
     /**
      * The Bluetooth adapter we'll use to communicate with the phone app.
@@ -107,6 +113,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         loadAccount();
+        loadSpreadsheetName();
         loadCalibration();
 
         setContentView(R.layout.main_activity);
@@ -191,6 +198,9 @@ public class MainActivity extends Activity {
             case R.id.action_reset_dispense_count:
                 setDispenseRemaining(FULL_DISPENSE_COUNT);
                 return true;
+            case R.id.action_pick_spreadsheet:
+                pickSpreadsheet();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -225,6 +235,7 @@ public class MainActivity extends Activity {
                     mOAuthToken = GoogleAuthUtil.getToken(activity, mEmailAccount, SHEETS_SCOPE, null /* extras */);
                     Log.d("LOG", "Got OAuth2 token: " + mOAuthToken);
 
+                    // TODO move this to only happen after spreadsheet has been picked
                     // We know we have internet access if we got an OAuth token. Check if we have
                     // any backup data stored locally that we could upload.
                     checkForBackupDataInAsyncTask();
@@ -714,6 +725,9 @@ public class MainActivity extends Activity {
         if (trialData.timedOut) {
             Toast.makeText(this, "Trial out of time", Toast.LENGTH_LONG).show();
         } else {
+            if (trialData.subjectChoseCorrectly) {
+                setDispenseRemaining(mDispenseRemaining - 1);
+            }
             Toast.makeText(this, trialData.subjectChoseCorrectly ? "Correct choice" : "Incorrect choice", Toast.LENGTH_LONG).show();
         }
 
@@ -757,7 +771,44 @@ public class MainActivity extends Activity {
             saveAccount();
             Log.d("LOG", "Email account picking callback: " + mEmailAccount);
             getOAuthTokenInAsyncTask();
+        } else if (requestCode == PICK_SPREADSHEET_CALLBACK) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    Uri uri = data.getData();
+                    Log.d("LOG", "Data spreadsheet URI: " + uri.toString());
+
+                    // TODO use Drive's GMS core APIs instead, so we can get the specific
+                    // spreadsheet by ID (using OpenFileActivityBuilder). This requires a rewrite
+                    // of much of the Drive code in this app, so I'm deferring it and just using the
+                    // picker to get spreadsheet name right now. If there's multiple spreadsheets
+                    // with this same name, it will just use the first one.
+
+                    // Resolve to spreadsheet name.
+                    Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    cursor.moveToFirst();
+                    String fileName = cursor.getString(nameIndex);
+                    Log.d("LOG", "Data spreadsheet name: " + fileName);
+                    setSpreadsheetName(fileName);
+                    saveSpreadsheetName();
+                }
+            }
         }
+    }
+
+    public static synchronized void setSpreadsheetName(String name) {
+        mSpreadsheetName = name;
+    }
+
+    public static synchronized String getSpreadsheetName() {
+        return mSpreadsheetName;
+    }
+
+    private void pickSpreadsheet() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        startActivityForResult(intent, PICK_SPREADSHEET_CALLBACK);
     }
 
     private RGBColor mColorBeingCalibrated = null;
@@ -897,6 +948,23 @@ public class MainActivity extends Activity {
         editor.putString(EMAIL_ACCOUNT_PREF, mEmailAccount);
         editor.commit();
         Log.d("LOG", "Saved email account: " + mEmailAccount);
+    }
+
+    private static String SPREADSHEET_PREF = "spreadsheet name";
+
+    private void loadSpreadsheetName() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        String spreadsheetName = settings.getString(SPREADSHEET_PREF, "Lemur data from SMARTA");
+        setSpreadsheetName(spreadsheetName);
+        Log.d("LOG", "Using spreadsheet name: " + spreadsheetName);
+    }
+
+    private void saveSpreadsheetName() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(SPREADSHEET_PREF, getSpreadsheetName());
+        editor.commit();
+        Log.d("LOG", "Saved spreadsheet name: " + getSpreadsheetName());
     }
 
     private void loadCalibration() {

@@ -1,30 +1,17 @@
 package com.vagell.lemurcolor;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.auth.UserRecoverableNotifiedException;
-import com.google.gdata.client.authn.oauth.*;
 import com.google.gdata.client.spreadsheet.*;
-import com.google.gdata.data.*;
-import com.google.gdata.data.batch.*;
 import com.google.gdata.data.spreadsheet.*;
-import com.google.gdata.util.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,8 +25,8 @@ public class TrialDataSaverThread extends Thread {
     private Date mSessionStartTime;
     private static SpreadsheetService mService = null;
     private static URL mListFeedUrl = null;
+    private static String mLastFileName = null;
 
-    private static final String SPREADSHEET_NAME = "Lemur data from SMARTA"; // TODO make configurable in UI
     private SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat(RenderedTimer.TIME_FORMAT_STRING);
 
     public TrialDataSaverThread(Activity activity, String subjectName, String phase, TrialData trialData, String oAuthToken, Date sessionStartTime) {
@@ -58,7 +45,7 @@ public class TrialDataSaverThread extends Thread {
             mTrialData.leftColor.toString() + "," + mTrialData.rightColor.toString() + "," + mTrialData.timedOut + "," + ((mTrialData.timedOut) ? "-" : "" + mTrialData.subjectChoseCorrectly) + "\r\n";
 
         try {
-            if (mService == null || mListFeedUrl == null) {
+            if (mService == null || mListFeedUrl == null || !MainActivity.getSpreadsheetName().equals(mLastFileName) /* user picked different spreadsheet */) {
                 mService = new SpreadsheetService("SMARTA-v1");
                 mService.setAuthSubToken(mOAuthToken);
 
@@ -78,7 +65,7 @@ public class TrialDataSaverThread extends Thread {
                         public void run() {
                             new AlertDialog.Builder(mActivity)
                                     .setTitle("No spreadsheets in Drive")
-                                    .setMessage("This account has no spreadsheets in Drive. Restart app and choose account with spreadsheet " + SPREADSHEET_NAME + ". Data saved to text file for now.")
+                                    .setMessage("This account has no spreadsheets in Drive. Change account or pick another spreadsheet. Data saved to text file for now.")
                                     .setCancelable(false)
                                     .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                                         @Override
@@ -94,8 +81,11 @@ public class TrialDataSaverThread extends Thread {
                 }
 
                 SpreadsheetEntry dataSpreadsheet = null;
+                // TODO find a cleaner way to detect when spreadsheet was changed. This isn't
+                // thread safe (but user unlikely to change it during a save operation).
+                mLastFileName = MainActivity.getSpreadsheetName();
                 for (int i = 0; i < spreadsheets.size(); i++) {
-                    if (spreadsheets.get(i).getTitle().getPlainText().equals(SPREADSHEET_NAME)) {
+                    if (spreadsheets.get(i).getTitle().getPlainText().equals(mLastFileName)) {
                         dataSpreadsheet = spreadsheets.get(i);
                         Log.d("LOG", "Found spreadsheet: " + spreadsheets.get(i).getTitle().getPlainText());
                         break;
@@ -103,15 +93,15 @@ public class TrialDataSaverThread extends Thread {
                 }
 
                 if (dataSpreadsheet == null) {
-                    Log.d("LOG", "FATAL ERROR: No spreadsheet named " + SPREADSHEET_NAME + " in this account. Data saved to text file for now.");
+                    Log.d("LOG", "FATAL ERROR: No spreadsheet named " + mLastFileName + " in this account. Data saved to text file for now.");
 
                     appendBackupData(backupData);
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             new AlertDialog.Builder(mActivity)
-                                    .setTitle("No spreadsheets in Drive")
-                                    .setMessage("This account has no spreadsheets in Drive. Restart app and choose account with spreadsheet " + SPREADSHEET_NAME + ". Data saved to text file for now.")
+                                    .setTitle("Spreadsheet not found")
+                                    .setMessage("This account doesn't have a spreadsheet named " + mLastFileName + ". Change account or pick another spreadsheet. Data saved to text file for now.")
                                     .setCancelable(false)
                                     .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                                         @Override

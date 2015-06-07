@@ -27,8 +27,7 @@ public class TrainingDataSaverThread extends Thread {
     private String mOAuthToken;
     private static SpreadsheetService mService = null;
     private static URL mListFeedUrl = null;
-
-    private static final String SPREADSHEET_NAME = "Lemur data from SMARTA"; // TODO make configurable in UI
+    private static String mLastFileName = null;
 
     public TrainingDataSaverThread(Activity activity, String subjectName, String startTime, String elapsedTime, String oAuthToken) {
         mActivity = activity;
@@ -44,7 +43,7 @@ public class TrainingDataSaverThread extends Thread {
         String backupData = mSubjectName + "," + mStartTime + "," + mElapsedTime + "\r\n";
 
         try {
-            if (mService == null || mListFeedUrl == null) {
+            if (mService == null || mListFeedUrl == null || !MainActivity.getSpreadsheetName().equals(mLastFileName) /* user picked different spreadsheet */) {
                 mService = new SpreadsheetService("SMARTA-v1");
                 mService.setAuthSubToken(mOAuthToken);
 
@@ -64,7 +63,7 @@ public class TrainingDataSaverThread extends Thread {
                         public void run() {
                             new AlertDialog.Builder(mActivity)
                                     .setTitle("No spreadsheets in Drive")
-                                    .setMessage("This account has no spreadsheets in Drive. Restart app and choose account with spreadsheet " + SPREADSHEET_NAME + ". Data saved to text file for now.")
+                                    .setMessage("This account has no spreadsheets in Drive. Change account or pick another spreadsheet. Data saved to text file for now.")
                                     .setCancelable(false)
                                     .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                                         @Override
@@ -80,8 +79,11 @@ public class TrainingDataSaverThread extends Thread {
                 }
 
                 SpreadsheetEntry dataSpreadsheet = null;
+                // TODO find a cleaner way to detect when spreadsheet was changed. This isn't
+                // thread safe (but user unlikely to change it during a save operation).
+                mLastFileName = MainActivity.getSpreadsheetName();
                 for (int i = 0; i < spreadsheets.size(); i++) {
-                    if (spreadsheets.get(i).getTitle().getPlainText().equals(SPREADSHEET_NAME)) {
+                    if (spreadsheets.get(i).getTitle().getPlainText().equals(mLastFileName)) {
                         dataSpreadsheet = spreadsheets.get(i);
                         Log.d("LOG", "Found spreadsheet: " + spreadsheets.get(i).getTitle().getPlainText());
                         break;
@@ -89,15 +91,15 @@ public class TrainingDataSaverThread extends Thread {
                 }
 
                 if (dataSpreadsheet == null) {
-                    Log.d("LOG", "FATAL ERROR: No spreadsheet named " + SPREADSHEET_NAME + " in this account. Data saved to text file for now.");
+                    Log.d("LOG", "FATAL ERROR: No spreadsheet named " + mLastFileName + " in this account. Data saved to text file for now.");
 
                     appendBackupData(backupData);
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             new AlertDialog.Builder(mActivity)
-                                    .setTitle("No spreadsheets in Drive")
-                                    .setMessage("This account has no spreadsheets in Drive. Restart app and choose account with spreadsheet " + SPREADSHEET_NAME + ". Data saved to text file for now.")
+                                    .setTitle("Spreadsheet not found")
+                                    .setMessage("This account doesn't have a spreadsheet named " + mLastFileName + ". Change account or pick another spreadsheet. Data saved to text file for now.")
                                     .setCancelable(false)
                                     .setPositiveButton("Close", new DialogInterface.OnClickListener() {
                                         @Override
