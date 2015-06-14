@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/LemurColor.iml" filepath="$PROJECT_DIR$/LemurColor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SmartaTabletApp.iml" filepath="$PROJECT_DIR$/SmartaTabletApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

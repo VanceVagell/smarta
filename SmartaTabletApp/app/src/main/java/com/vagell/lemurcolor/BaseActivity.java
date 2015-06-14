@@ -206,4 +206,10 @@ public abstract class BaseActivity extends Activity implements SurfaceHolder.Cal
     protected void sendBtMessage(String message) {
         mBtServiceBinder.write(message);
     }
+
+    @Override
+    public void onBackPressed() {
+        // Prevent back button behavior, don't want it to exit the app.
+        // super.onBackPressed();
+    }
 }
