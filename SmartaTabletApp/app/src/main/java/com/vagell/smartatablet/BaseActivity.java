@@ -1,7 +1,6 @@
-package com.vagell.lemurcolor;
+package com.vagell.smartatablet;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothSocket;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;

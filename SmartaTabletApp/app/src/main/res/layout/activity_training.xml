@@ -7,7 +7,7 @@
     android:background="@color/calibration1_default_bg"
     android:id="@+id/training_bg"
     android:keepScreenOn="true"
-    tools:context="com.vagell.lemurcolor.TrainingActivity">
+    tools:context="com.vagell.smartatablet.TrainingActivity">
 
     <FrameLayout
         android:id="@+id/training_obj"

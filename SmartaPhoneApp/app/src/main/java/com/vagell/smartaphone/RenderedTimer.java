@@ -1,4 +1,4 @@
-package com.vagell.lemurcolor;
+package com.vagell.smartaphone;
 
 import android.app.Activity;
 import android.widget.TextView;

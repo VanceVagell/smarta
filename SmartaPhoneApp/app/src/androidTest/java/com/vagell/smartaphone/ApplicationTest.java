@@ -1,4 +1,4 @@
-package com.vagell.lemurcolor;
+package com.vagell.smartaphone;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

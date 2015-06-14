@@ -1,4 +1,4 @@
-package com.vagell.lemurcolor;
+package com.vagell.smartatablet;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -38,7 +38,7 @@ public class BTMessageHandler extends Handler {
                     break;
                 case MESSAGE_BT_RESET:
                     Log.d("LOG", "BTMessageHandler received BT msg: Reset. Restarting BT connection.");
-                    intent = new Intent(mActivity, FullscreenActivity.class);
+                    intent = new Intent(mActivity, MainActivity.class);
                     mActivity.finish();
                     mActivity.startActivity(intent);
                     break;

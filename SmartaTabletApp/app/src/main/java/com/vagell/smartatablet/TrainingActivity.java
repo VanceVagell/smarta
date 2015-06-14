@@ -1,32 +1,10 @@
-package com.vagell.lemurcolor;
+package com.vagell.smartatablet;
 
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.hardware.Camera;
-import android.media.AudioManager;
-import android.media.MediaRecorder;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.IBinder;
-import android.os.Looper;
-import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-
-import java.io.File;
-import java.io.IOException;
 
 public class TrainingActivity extends BaseActivity {
     public static String TRAINING_OBJ_COLOR_EXTRA = "training_obj_color";

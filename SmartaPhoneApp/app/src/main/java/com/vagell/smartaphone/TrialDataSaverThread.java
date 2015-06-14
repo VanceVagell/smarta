@@ -1,4 +1,4 @@
-package com.vagell.lemurcolor;
+package com.vagell.smartaphone;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,41 +6,43 @@ import android.content.DialogInterface;
 import android.os.Environment;
 import android.util.Log;
 
-import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.data.spreadsheet.ListEntry;
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
-import com.google.gdata.data.spreadsheet.WorksheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetFeed;
+import com.google.gdata.client.spreadsheet.*;
+import com.google.gdata.data.spreadsheet.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
-public class TrainingDataSaverThread extends Thread {
+public class TrialDataSaverThread extends Thread {
     private Activity mActivity;
-    private String mSubjectName;
-    private String mStartTime;
-    private String mElapsedTime;
+    private TrialData mTrialData;
+    String mSubjectName, mPhase;
     private String mOAuthToken;
+    private Date mSessionStartTime;
     private static SpreadsheetService mService = null;
     private static URL mListFeedUrl = null;
     private static String mLastFileName = null;
 
-    public TrainingDataSaverThread(Activity activity, String subjectName, String startTime, String elapsedTime, String oAuthToken) {
+    private SimpleDateFormat START_TIME_FORMAT = new SimpleDateFormat(RenderedTimer.TIME_FORMAT_STRING);
+
+    public TrialDataSaverThread(Activity activity, String subjectName, String phase, TrialData trialData, String oAuthToken, Date sessionStartTime) {
         mActivity = activity;
         mSubjectName = subjectName;
-        mStartTime = startTime;
-        mElapsedTime = elapsedTime;
+        mPhase = phase;
+        mTrialData = trialData;
         mOAuthToken = oAuthToken;
+        mSessionStartTime = sessionStartTime;
     }
 
     @Override
     public void run() {
         // String we'll save locally if there's any failure.
-        String backupData = mSubjectName + "," + mStartTime + "," + mElapsedTime + "\r\n";
+        String backupData = mSubjectName + "," + mPhase + "," + START_TIME_FORMAT.format(mSessionStartTime) + "," + (mTrialData.count + 1) + "," + mTrialData.duration + "," +
+            mTrialData.leftColor.toString() + "," + mTrialData.rightColor.toString() + "," + mTrialData.timedOut + "," + ((mTrialData.timedOut) ? "-" : "" + mTrialData.subjectChoseCorrectly) + "\r\n";
 
         try {
             if (mService == null || mListFeedUrl == null || !MainActivity.getSpreadsheetName().equals(mLastFileName) /* user picked different spreadsheet */) {
@@ -116,7 +118,7 @@ public class TrainingDataSaverThread extends Thread {
 
                 WorksheetFeed worksheetFeed = mService.getFeed(dataSpreadsheet.getWorksheetFeedUrl(), WorksheetFeed.class);
                 List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
-                WorksheetEntry worksheet = worksheets.get(0); // 0 is the training sheet.
+                WorksheetEntry worksheet = worksheets.get(1); // 1 is the testing sheet.
 
                 // Fetch the list feed of the worksheet.
                 mListFeedUrl = worksheet.getListFeedUrl();
@@ -125,8 +127,14 @@ public class TrainingDataSaverThread extends Thread {
             // Create a local representation of the new row.
             ListEntry row = new ListEntry();
             row.getCustomElements().setValueLocal("subject", mSubjectName);
-            row.getCustomElements().setValueLocal("trainingstart", mStartTime);
-            row.getCustomElements().setValueLocal("trainingduration", mElapsedTime);
+            row.getCustomElements().setValueLocal("phase", mPhase);
+            row.getCustomElements().setValueLocal("sessionstart", START_TIME_FORMAT.format(mSessionStartTime));
+            row.getCustomElements().setValueLocal("trial", "" + (mTrialData.count + 1));
+            row.getCustomElements().setValueLocal("trialduration", "" + mTrialData.duration);
+            row.getCustomElements().setValueLocal("leftcolor", mTrialData.leftColor.toString());
+            row.getCustomElements().setValueLocal("rightcolor", mTrialData.rightColor.toString());
+            row.getCustomElements().setValueLocal("timedout", "" + mTrialData.timedOut);
+            row.getCustomElements().setValueLocal("correct", ((mTrialData.timedOut) ? "-" : "" + mTrialData.subjectChoseCorrectly));
 
             // Send the new row to the API for insertion.
             row = mService.insert(mListFeedUrl, row);
@@ -154,7 +162,7 @@ public class TrainingDataSaverThread extends Thread {
         }
     }
 
-    public static final String BACKUP_TEXT_FILE_NAME = "smarta-backup-training-data.txt";
+    public static final String BACKUP_TEXT_FILE_NAME = "smarta-backup-test-data.txt";
 
     private synchronized void appendBackupData(String backupData) {
         Log.d("LOG", "Saving backup data to text file, can't access online spreadsheet.");

@@ -1,4 +1,4 @@
-package com.vagell.lemurcolor;
+package com.vagell.smartatablet;
 
 import android.os.Bundle;
 import android.os.Handler;

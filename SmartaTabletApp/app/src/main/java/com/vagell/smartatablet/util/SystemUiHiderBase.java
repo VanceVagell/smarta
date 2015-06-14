@@ -1,4 +1,4 @@
-package com.vagell.lemurcolor.util;
+package com.vagell.smartatablet.util;
 
 import android.app.Activity;
 import android.view.View;

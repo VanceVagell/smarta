@@ -1,4 +1,4 @@
-package com.vagell.lemurcolor;
+package com.vagell.smartatablet;
 
 import android.graphics.Color;
 
@@ -9,9 +9,5 @@ public class RGBColor {
 
     public int toIntColor() {
         return Color.rgb(r, g, b);
-    }
-
-    public String toString() {
-        return "R: " + r + " G: " + g + " B: " + b;
     }
 }
