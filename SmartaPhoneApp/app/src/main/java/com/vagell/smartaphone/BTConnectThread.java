@@ -71,6 +71,7 @@ public class BTConnectThread extends Thread {
             try {
                 // Workaround Android BT stack changes: http://stackoverflow.com/questions/18657427/ioexception-read-failed-socket-might-closed-bluetooth-on-android-4-3/18786701#18786701
                 mSocket = (BluetoothSocket) mDevice.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(mDevice, 1);
+//                mSocket = mDevice.createRfcommSocketToServiceRecord(BT_UUID);
                 mSocket.connect();
             } catch (Exception e) {
                 // TODO would love to restart app if bluetooth fails, but we get a couple intermittent failures even during a normal run, so can't :(

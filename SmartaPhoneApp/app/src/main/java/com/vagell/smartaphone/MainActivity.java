@@ -679,24 +679,28 @@ public class MainActivity extends Activity {
                 Log.d("LOG", "No paired Bluetooth devices.");
                 return;
             } else {
-                BluetoothDevice firstBluetoothDevice = pairedDevices.toArray(new BluetoothDevice[pairedDevices.size()])[0];
-                Handler connectHandler = new Handler(Looper.getMainLooper()) {
-                    @Override
-                    public void handleMessage(Message message) {
-                        switch (message.what) {
-                            case BTConnectThread.MESSAGE_BT_CONNECTED:
-                                findViewById(R.id.connecting_message).setVisibility(View.INVISIBLE);
-                                mTabs.setVisibility(View.VISIBLE);
-                                break;
-                            // TODO add a case for MESSAGE_BT_CONNECT_FAILED so we can retry (requires extracting this handler to avoid recursive ref)
-                            default:
-                                Log.d("LOG", "Unknown BT message: " + message);
+                // Checks for a SMARTA tablet server on all paired devices.
+                // TODO be smarter about what devices to try to connect to.
+                for (int i = 0; i < pairedDevices.size(); i++) {
+                    BluetoothDevice bluetoothDevice = pairedDevices.toArray(new BluetoothDevice[pairedDevices.size()])[i];
+                    Handler connectHandler = new Handler(Looper.getMainLooper()) {
+                        @Override
+                        public void handleMessage(Message message) {
+                            switch (message.what) {
+                                case BTConnectThread.MESSAGE_BT_CONNECTED:
+                                    findViewById(R.id.connecting_message).setVisibility(View.INVISIBLE);
+                                    mTabs.setVisibility(View.VISIBLE);
+                                    break;
+                                // TODO add a case for MESSAGE_BT_CONNECT_FAILED so we can retry (requires extracting this handler to avoid recursive ref)
+                                default:
+                                    Log.d("LOG", "Unknown BT message: " + message);
+                            }
                         }
-                    }
-                };
-                mBtMessageHandler = new BTMessageHandler();
-                mBtConnectThread = new BTConnectThread((LemurColorRemoteApplication) getApplication(), connectHandler, mBtMessageHandler, firstBluetoothDevice, mBluetoothAdapter, this);
-                mBtConnectThread.start();
+                    };
+                    mBtMessageHandler = new BTMessageHandler();
+                    mBtConnectThread = new BTConnectThread((LemurColorRemoteApplication) getApplication(), connectHandler, mBtMessageHandler, bluetoothDevice, mBluetoothAdapter, this);
+                    mBtConnectThread.start();
+                }
             }
         }
     }
