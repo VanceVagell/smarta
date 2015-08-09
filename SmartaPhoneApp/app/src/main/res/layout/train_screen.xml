@@ -10,7 +10,7 @@
     <TextView
         android:id="@+id/train_status"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="56dp"
         android:layout_marginBottom="16dp"
         android:text="Not training"
         android:textColor="@color/very_light_text"
@@ -20,7 +20,7 @@
     <TextView
         android:id="@+id/train_timer"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="56dp"
         android:layout_marginBottom="16dp"
         android:text="00:00"
         android:textColor="@color/dark_text"
@@ -89,7 +89,7 @@
             <Button
                 android:id="@+id/train_conveyor_back"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
+                android:layout_height="112dp"
                 android:layout_alignParentBottom="true"
                 android:layout_marginRight="4dp"
                 android:layout_weight="1"
@@ -99,7 +99,7 @@
             <Button
                 android:id="@+id/train_dispense"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
+                android:layout_height="112dp"
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="4dp"
                 android:layout_weight="1"

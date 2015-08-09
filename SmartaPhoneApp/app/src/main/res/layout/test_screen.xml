@@ -10,7 +10,7 @@
     <TextView
         android:id="@+id/test_status"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="56dp"
         android:layout_marginBottom="16dp"
         android:text="Not testing"
         android:textColor="@color/very_light_text"
@@ -19,7 +19,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="56dp"
         android:layout_marginBottom="16dp"
         android:id="@+id/test_details"
         android:visibility="gone"
@@ -89,7 +89,7 @@
             <Button
                 android:id="@+id/test_conveyor_back"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
+                android:layout_height="112dp"
                 android:layout_alignParentBottom="true"
                 android:layout_marginRight="4dp"
                 android:layout_weight="1"
@@ -99,7 +99,7 @@
             <Button
                 android:id="@+id/test_dispense"
                 android:layout_width="0dp"
-                android:layout_height="46dp"
+                android:layout_height="112dp"
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="4dp"
                 android:layout_weight="1"
