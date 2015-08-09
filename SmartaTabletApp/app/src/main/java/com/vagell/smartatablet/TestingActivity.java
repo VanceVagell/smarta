@@ -14,6 +14,7 @@ package com.vagell.smartatablet;
         See the License for the specific language governing permissions and
         limitations under the License.*/
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -59,23 +60,13 @@ public class TestingActivity extends BaseActivity {
         mColorMap = new Gson().fromJson(mapJson, new TypeToken<HashMap<String, RGBColor>>() {}.getType());
         mPhase = (String) getIntent().getStringExtra(TESTING_PHASE_EXTRA);
 
-        // TODO fix bug where putting your whole hand on screen doesn't trigger a touch
-        // event. Might need to listen to highest-level view and pass event to appropriate
-        // child manually (assuming touch event data is accurate).
-        View leftColor = findViewById(R.id.left_color_block);
-        leftColor.setOnTouchListener(new View.OnTouchListener() {
+        // Manually handle touch events anywhere on the screen. Notice that we don't use touch
+        // handlers on the 2 testing shapes themselves, see handleTouch() for details.
+        View bgView = findViewById(R.id.testing_bg);
+        bgView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                handleLeftColorTapped(view);
-                return true;
-            }
-        });
-
-        View rightColor = findViewById(R.id.right_color_block);
-        rightColor.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                handleRightColorTapped(view);
+                handleTouch(motionEvent);
                 return true;
             }
         });
@@ -136,52 +127,66 @@ public class TestingActivity extends BaseActivity {
         mHandler.postDelayed(mTrialTimeoutRunnable, SEC_PER_TRIAL * 1000);
     }
 
-    public void handleLeftColorTapped(View v) {
-        if (!mTrialActive) { // debounce touch events
+    /**
+     * We handle touch events manually, rather than having touch listeners on the shapes, because
+     * Android doesn't do a great job with animals placing their entire hand / paw on the screen.
+     * It may overlap multiple views, or be treated as a long press, or other undesirable
+     * situations. It's not sensitive enough, so we check for intersections ourselves here.
+     */
+    private void handleTouch(MotionEvent touchEvent) {
+        if (!mTrialActive) {
             return;
         }
-        mTrialActive = false;
-        mHandler.removeCallbacks(mTrialTimeoutRunnable);
-        TrialData trialData = mSessionData.trialData.get(mTrialCount);
-        trialData.subjectChoseCorrectly = trialData.leftCorrect;
-        if (trialData.subjectChoseCorrectly) {
-            Log.d("LOG", "Correct!");
-            ArduinoMessager.send(this, ArduinoMessager.ARDUINO_DISPENSE);
-        } else {
-            Log.d("LOG", "Incorrect.");
-        }
-        trialData.timedOut = false;
-        trialData.setEndTime();
-        sendTrialData();
-        if (mTrialCount < TRIALS_PER_SESSION - 1) {
-            waitBetweenTrials();
-        } else {
-            stop();
+
+        // If any finger touched one of the shapes, decide if it was a correct or incorrect touch.
+        for (int i = 0; i < touchEvent.getPointerCount(); i++) {
+            MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+            touchEvent.getPointerCoords(i, coords);
+
+            TrialData trialData = mSessionData.trialData.get(mTrialCount);
+
+            // Did they touch the left shape?
+            if (intersects(coords, findViewById(R.id.left_color_block))) {
+                Log.d("LOG", "Finger " + i + " tapped left shape.");
+                trialData.subjectChoseCorrectly = trialData.leftCorrect;
+
+            // Did they touch the right shape?
+            } else if (intersects(coords, findViewById(R.id.right_color_block))) {
+                Log.d("LOG", "Finger " + i + " tapped right shape.");
+                trialData.subjectChoseCorrectly = !trialData.leftCorrect;
+            }
+
+            // If they didn't touch a shape with this finger, check next finger.
+            if (trialData.subjectChoseCorrectly == null) {
+                Log.d("LOG", "Finger " + i + " did not touch either shape.");
+                continue;
+
+            // They touched a shape, wrap up this trial.
+            } else {
+                mTrialActive = false;
+                mHandler.removeCallbacks(mTrialTimeoutRunnable);
+                if (trialData.subjectChoseCorrectly) {
+                    Log.d("LOG", "Correct!");
+                    ArduinoMessager.send(this, ArduinoMessager.ARDUINO_DISPENSE);
+                } else {
+                    Log.d("LOG", "Incorrect.");
+                }
+                trialData.timedOut = false;
+                trialData.setEndTime();
+                sendTrialData();
+                if (mTrialCount < TRIALS_PER_SESSION - 1) {
+                    waitBetweenTrials();
+                } else {
+                    stop();
+                }
+            }
         }
     }
 
-    public void handleRightColorTapped(View v) {
-        if (!mTrialActive) { // debounce touch events
-            return;
-        }
-        mTrialActive = false;
-        mHandler.removeCallbacks(mTrialTimeoutRunnable);
-        TrialData trialData = mSessionData.trialData.get(mTrialCount);
-        trialData.subjectChoseCorrectly = !trialData.leftCorrect;
-        if (trialData.subjectChoseCorrectly) {
-            Log.d("LOG", "Correct!");
-            ArduinoMessager.send(this, ArduinoMessager.ARDUINO_DISPENSE);
-        } else {
-            Log.d("LOG", "Incorrect.");
-        }
-        trialData.timedOut = false;
-        trialData.setEndTime();
-        sendTrialData();
-        if (mTrialCount < TRIALS_PER_SESSION - 1) {
-            waitBetweenTrials();
-        } else {
-            stop();
-        }
+    private boolean intersects(MotionEvent.PointerCoords coords, View view) {
+        Rect viewRect = new Rect();
+        view.getGlobalVisibleRect(viewRect);
+        return viewRect.contains((int) coords.x, (int) coords.y);
     }
 
     private class SessionData {
