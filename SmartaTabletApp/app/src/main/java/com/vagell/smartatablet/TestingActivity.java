@@ -133,7 +133,7 @@ public class TestingActivity extends BaseActivity {
      * It may overlap multiple views, or be treated as a long press, or other undesirable
      * situations. It's not sensitive enough, so we check for intersections ourselves here.
      */
-    private void handleTouch(MotionEvent touchEvent) {
+    private synchronized void handleTouch(MotionEvent touchEvent) {
         if (!mTrialActive) {
             return;
         }
@@ -179,6 +179,7 @@ public class TestingActivity extends BaseActivity {
                 } else {
                     stop();
                 }
+                return;
             }
         }
     }
