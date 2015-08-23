@@ -21,31 +21,24 @@ import android.view.SurfaceView;
 import android.view.View;
 
 public class TrainingActivity extends BaseActivity {
-    public static String TRAINING_OBJ_COLOR_EXTRA = "training_obj_color";
-    public static String TRAINING_BG_COLOR_EXTRA = "training_bg_color";
+    public static String TRAINING_RED_COLOR_EXTRA = "training_red_color";
+    public static String TRAINING_GRAY_COLOR_EXTRA = "training_gray_color";
 
-    private int mBgColor = -1;
-    private int mObjColor = -1;
+    private int mRedColor = -1;
+    private int mGrayColor = -1;
+    private boolean mAnimating = false;
     private ObjectAnimator mAnim = null;
+    View redObj = null;
+    View nonRedObj = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Use requested colors
-        int objColor = (Integer) getIntent().getExtras().get(TRAINING_OBJ_COLOR_EXTRA);
-        View trainingObj = findViewById(R.id.training_obj);
-        trainingObj.setBackgroundColor(objColor);
-        mObjColor = objColor;
-        int bgColor = (Integer) getIntent().getExtras().get(TRAINING_BG_COLOR_EXTRA);
-        findViewById(R.id.training_bg).setBackgroundColor(bgColor);
-        mBgColor = bgColor;
-        setVisible(true); // In case we were toggled off previously.
-
-        // Create animator, for when we want to move the object around
-        mAnim = ObjectAnimator.ofFloat(trainingObj, "rotation", 0, 180);
-        mAnim.setDuration(600);
-        mAnim.setRepeatCount(ObjectAnimator.INFINITE);
+        mGrayColor = (Integer) getIntent().getExtras().get(TRAINING_RED_COLOR_EXTRA);
+        mRedColor = (Integer) getIntent().getExtras().get(TRAINING_GRAY_COLOR_EXTRA);
+        setObjVisible(true); // In case we were toggled off previously.
     }
 
     protected SurfaceView getCameraView() {
@@ -59,35 +52,58 @@ public class TrainingActivity extends BaseActivity {
     public void setObjVisible(boolean visible) {
         // Note that we don't actually hide the View, because we need the SurfaceView that
         // the media recorder uses to be on the screen. Otherwise video recording fails.
-        int objColor = visible ? mObjColor : Color.BLACK;
-        int bgColor = visible ? mBgColor : Color.BLACK;
-        findViewById(R.id.training_obj).setBackgroundColor(objColor);
-        findViewById(R.id.training_bg).setBackgroundColor(bgColor);
+        int grayColor = visible ? mGrayColor : Color.BLACK;
+        int redColor = visible ? mRedColor : Color.BLACK;
+
+        if (visible) {
+            boolean leftIsRed = randInt(0, 1) == 1;
+            if (leftIsRed) {
+                redObj = findViewById(R.id.training_left_color_block);
+                nonRedObj = findViewById(R.id.training_right_color_block);
+            } else {
+                redObj = findViewById(R.id.training_right_color_block);
+                nonRedObj = findViewById(R.id.training_left_color_block);
+            }
+
+            // Create animator, for when we want to move the object around
+            mAnim = ObjectAnimator.ofFloat(redObj, "rotation", 0, 180);
+            mAnim.setDuration(600);
+            mAnim.setRepeatCount(ObjectAnimator.INFINITE);
+
+            setAnimating(mAnimating);
+        } else {
+            mAnim.cancel();
+        }
+
+        nonRedObj.setBackgroundColor(grayColor);
+        redObj.setBackgroundColor(redColor);
     }
 
     /**
-     * Sets obj color in model, but won't be applied until next time setObjVisible(true) is called.
+     * Sets red color in model, but won't be applied until next time setObjVisible(true) is called.
      * TODO remove this side effect (it's because setObjVisible sets to black to hide)
      */
-    public void setObjColor(int objColor) {
-        mObjColor = objColor;
+    public void setGrayColor(int objColor) {
+        mGrayColor = objColor;
     }
 
     /**
-     * Sets bg color in model, but won't be applied until next time setObjVisible(true) is called.
+     * Sets gray color in model, but won't be applied until next time setObjVisible(true) is called.
      * TODO remove this side effect (it's because setObjVisible sets to black to hide)
      */
-    public void setBgColor(int bgColor) {
-        mBgColor = bgColor;
+    public void setRedColor(int bgColor) {
+        mRedColor = bgColor;
     }
 
     public void setAnimating(boolean animating) {
-        if (animating) {
+        mAnimating = animating;
+        if (mAnimating) {
             mAnim.start();
+            nonRedObj.setRotation(0);
         } else {
-            View trainingObj = findViewById(R.id.training_obj);
             mAnim.cancel();
-            trainingObj.setRotation(0);
+            redObj.setRotation(0);
+            nonRedObj.setRotation(0);
         }
     }
 }

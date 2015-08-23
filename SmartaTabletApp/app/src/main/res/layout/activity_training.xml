@@ -9,13 +9,46 @@
     android:keepScreenOn="true"
     tools:context="com.vagell.smartatablet.TrainingActivity">
 
-    <FrameLayout
-        android:id="@+id/training_obj"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:background="@color/calibration1_default_obj"></FrameLayout>
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/testing_dividers"
+        android:columnCount="3"
+        android:rowCount="1">
+
+        <RelativeLayout
+            android:layout_width="590dp"
+            android:layout_height="match_parent">
+            <FrameLayout
+                android:id="@+id/training_left_color_block"
+                android:layout_width="400dp"
+                android:layout_height="400dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="#ff000000"></FrameLayout>
+        </RelativeLayout>
+
+
+        <!-- Border -->
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"></FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="590dp"
+            android:layout_height="match_parent">
+            <FrameLayout
+                android:id="@+id/training_right_color_block"
+                android:layout_width="400dp"
+                android:layout_height="400dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="#ff000000"></FrameLayout>
+        </RelativeLayout>
+
+    </GridLayout>
 
     <SurfaceView
         android:layout_width="100dp"

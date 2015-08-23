@@ -38,7 +38,6 @@ public class TestingActivity extends BaseActivity {
     private Runnable mTrialTimeoutRunnable = null, mTrialStartRunnable = null;
     private SessionData mSessionData = null;
     private Handler mHandler = null;
-    private static Random mRandom = new Random();
     private boolean mTrialActive = false;
 
     public static final String PHASE1 = "phase1";
@@ -263,10 +262,6 @@ public class TestingActivity extends BaseActivity {
                 trialData.leftCorrect = false;
             }
         }
-    }
-
-    public static int randInt(int min, int max) {
-        return mRandom.nextInt((max - min) + 1) + min;
     }
 
     private RGBColor[] getGrayColors() {

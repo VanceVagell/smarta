@@ -75,18 +75,18 @@ public class BTMessageHandler extends Handler {
                             Map<String, RGBColor> colorMap = new Gson().fromJson(mapJson, new TypeToken<HashMap<String, RGBColor>>() {}.getType());
 
                             // TODO don't rely on these fragile names (share enums with phone app?)
-                            RGBColor bgColor = colorMap.get("Training colors Background");
-                            RGBColor objColor = colorMap.get("Training colors Object");
+                            RGBColor redColor = colorMap.get("Training colors Red");
+                            RGBColor grayColor = colorMap.get("Training colors Gray");
 
                             if (mActivity.getClass() == TrainingActivity.class) {
-                                ((TrainingActivity) mActivity).setObjColor(objColor.toIntColor());
-                                ((TrainingActivity) mActivity).setBgColor(bgColor.toIntColor());
+                                ((TrainingActivity) mActivity).setRedColor(redColor.toIntColor());
+                                ((TrainingActivity) mActivity).setGrayColor(grayColor.toIntColor());
                                 ((TrainingActivity) mActivity).setObjVisible(true);
                             } else {
                                 intent = new Intent(mActivity, TrainingActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                intent.putExtra(TrainingActivity.TRAINING_OBJ_COLOR_EXTRA, objColor.toIntColor());
-                                intent.putExtra(TrainingActivity.TRAINING_BG_COLOR_EXTRA, bgColor.toIntColor());
+                                intent.putExtra(TrainingActivity.TRAINING_RED_COLOR_EXTRA, redColor.toIntColor());
+                                intent.putExtra(TrainingActivity.TRAINING_GRAY_COLOR_EXTRA, grayColor.toIntColor());
                                 mActivity.startActivity(intent);
                             }
                         } else if (messageStr.contains("TrainingOff")) {
@@ -95,8 +95,8 @@ public class BTMessageHandler extends Handler {
                             } else {
                                 intent = new Intent(mActivity, TrainingActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                intent.putExtra(TrainingActivity.TRAINING_OBJ_COLOR_EXTRA, Color.BLACK);
-                                intent.putExtra(TrainingActivity.TRAINING_BG_COLOR_EXTRA, Color.BLACK);
+                                intent.putExtra(TrainingActivity.TRAINING_RED_COLOR_EXTRA, Color.BLACK);
+                                intent.putExtra(TrainingActivity.TRAINING_GRAY_COLOR_EXTRA, Color.BLACK);
                                 mActivity.startActivity(intent);
                             }
                         } else if (messageStr.contains("Testing")) {

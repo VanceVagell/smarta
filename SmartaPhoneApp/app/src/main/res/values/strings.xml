@@ -49,8 +49,8 @@
     </string-array>
 
     <string-array name="training_colors_array">
-        <item>Background</item>
-        <item>Object</item>
+        <item>Red</item>
+        <item>Gray</item>
     </string-array>
 
     <string-array name="testing_colors_array">

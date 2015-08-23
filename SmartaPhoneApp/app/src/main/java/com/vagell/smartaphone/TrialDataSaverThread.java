@@ -178,7 +178,7 @@ public class TrialDataSaverThread extends Thread {
 
     public static final String BACKUP_TEXT_FILE_NAME = "smarta-backup-test-data.txt";
 
-    private synchronized void appendBackupData(String backupData) {
+    private static synchronized void appendBackupData(String backupData) {
         Log.d("LOG", "Saving backup data to text file, can't access online spreadsheet.");
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         if (!dir.exists()) {

@@ -35,6 +35,7 @@ import android.view.WindowManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Training and Testing are so similar that we've extracted common functionality into this class.
@@ -45,6 +46,7 @@ public abstract class BaseActivity extends Activity implements SurfaceHolder.Cal
     private MediaRecorder mRecorder = null;
     private SurfaceHolder mSurfaceHolder = null;
     private boolean mRecording = false;
+    private static Random mRandom = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -223,5 +225,9 @@ public abstract class BaseActivity extends Activity implements SurfaceHolder.Cal
     public void onBackPressed() {
         // Prevent back button behavior, don't want it to exit the app.
         // super.onBackPressed();
+    }
+
+    protected static int randInt(int min, int max) {
+        return mRandom.nextInt((max - min) + 1) + min;
     }
 }
