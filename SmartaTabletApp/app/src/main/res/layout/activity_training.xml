@@ -4,19 +4,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/calibration1_default_bg"
-    android:id="@+id/training_bg"
+    android:background="#ff000000"
     android:keepScreenOn="true"
     tools:context="com.vagell.smartatablet.TrainingActivity">
+
+    <FrameLayout
+        android:id="@+id/training_mode_all_red"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="#ff000000"
+        android:visibility="invisible"></FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/training_mode_large_red_box"
+        android:layout_width="600dp"
+        android:layout_height="600dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="#ff000000"
+        android:visibility="invisible"></FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/training_mode_small_red_box"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="#ff000000"
+        android:visibility="invisible"></FrameLayout>
 
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/testing_dividers"
+        android:id="@+id/training_mode_red_and_gray_boxes"
         android:columnCount="3"
-        android:rowCount="1">
+        android:rowCount="1"
+        android:visibility="invisible">
 
         <RelativeLayout
+            android:id="@+id/training_left_container"
             android:layout_width="590dp"
             android:layout_height="match_parent">
             <FrameLayout
@@ -31,12 +60,14 @@
 
         <!-- Border -->
         <FrameLayout
+            android:id="@+id/training_middle_border"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"></FrameLayout>
 
         <RelativeLayout
+            android:id="@+id/training_right_container"
             android:layout_width="590dp"
             android:layout_height="match_parent">
             <FrameLayout

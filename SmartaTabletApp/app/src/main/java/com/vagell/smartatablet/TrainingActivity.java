@@ -17,28 +17,36 @@ package com.vagell.smartatablet;
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 public class TrainingActivity extends BaseActivity {
     public static String TRAINING_RED_COLOR_EXTRA = "training_red_color";
     public static String TRAINING_GRAY_COLOR_EXTRA = "training_gray_color";
+    public static String TRAINING_MODE_EXTRA = "training_mode";
 
     private int mRedColor = -1;
     private int mGrayColor = -1;
     private boolean mAnimating = false;
     private ObjectAnimator mAnim = null;
-    View redObj = null;
-    View nonRedObj = null;
+    private String mTrainingMode = null;
+    private View mRedObj = null;
+    private View mNonRedObj = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Use requested colors
+        // Get passed-in info from the intent, including requested colors
         mGrayColor = (Integer) getIntent().getExtras().get(TRAINING_RED_COLOR_EXTRA);
         mRedColor = (Integer) getIntent().getExtras().get(TRAINING_GRAY_COLOR_EXTRA);
-        setObjVisible(true); // In case we were toggled off previously.
+        mTrainingMode = (String) getIntent().getExtras().get(TRAINING_MODE_EXTRA);
+        if (mTrainingMode != null) {
+            setObjVisible(true);
+        }
     }
 
     protected SurfaceView getCameraView() {
@@ -52,31 +60,75 @@ public class TrainingActivity extends BaseActivity {
     public void setObjVisible(boolean visible) {
         // Note that we don't actually hide the View, because we need the SurfaceView that
         // the media recorder uses to be on the screen. Otherwise video recording fails.
-        int grayColor = visible ? mGrayColor : Color.BLACK;
-        int redColor = visible ? mRedColor : Color.BLACK;
-
         if (visible) {
-            boolean leftIsRed = randInt(0, 1) == 1;
-            if (leftIsRed) {
-                redObj = findViewById(R.id.training_left_color_block);
-                nonRedObj = findViewById(R.id.training_right_color_block);
+            View leftObj = findViewById(R.id.training_left_color_block);
+            View rightObj = findViewById(R.id.training_right_color_block);
+
+            // TODO remove fragile constants shared with client, should share versioned enum class or something
+            if (mTrainingMode.equals("All red")) {
+                mRedObj = null;
+                mNonRedObj = null;
+                View obj = findViewById(R.id.training_mode_all_red);
+                obj.setBackgroundColor(mRedColor);
+                obj.setVisibility(View.VISIBLE);
+                findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_small_red_box).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.INVISIBLE);
+            } else if (mTrainingMode.equals("Large red box")) {
+                View obj = findViewById(R.id.training_mode_large_red_box);
+                mRedObj = obj;
+                obj.setBackgroundColor(mRedColor);
+                obj.setVisibility(View.VISIBLE);
+                findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_small_red_box).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.INVISIBLE);
+            } else if (mTrainingMode.equals("Small red box")) {
+                View obj = findViewById(R.id.training_mode_small_red_box);
+                mRedObj = obj;
+                obj.setBackgroundColor(mRedColor);
+                obj.setVisibility(View.VISIBLE);
+                findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.INVISIBLE);
+            } else if (mTrainingMode.equals("Red and gray boxes")) {
+                boolean leftIsRed = randInt(0, 1) == 1;
+                if (leftIsRed) {
+                    mRedObj = leftObj;
+                    mNonRedObj = rightObj;
+                } else {
+                    mRedObj = rightObj;
+                    mNonRedObj = leftObj;
+                }
+
+                mNonRedObj.setBackgroundColor(mGrayColor);
+                mRedObj.setBackgroundColor(mRedColor);
+
+                findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.VISIBLE);
+                findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_small_red_box).setVisibility(View.INVISIBLE);
             } else {
-                redObj = findViewById(R.id.training_right_color_block);
-                nonRedObj = findViewById(R.id.training_left_color_block);
+                Log.d("LOG", "ERROR: Unexpected training mode value: " + mTrainingMode);
+                return;
             }
 
             // Create animator, for when we want to move the object around
-            mAnim = ObjectAnimator.ofFloat(redObj, "rotation", 0, 180);
-            mAnim.setDuration(600);
-            mAnim.setRepeatCount(ObjectAnimator.INFINITE);
+            if (mRedObj != null) {
+                mAnim = ObjectAnimator.ofFloat(mRedObj, "rotation", 0, 180);
+                mAnim.setDuration(600);
+                mAnim.setRepeatCount(ObjectAnimator.INFINITE);
+            }
 
             setAnimating(mAnimating);
-        } else {
-            mAnim.cancel();
+        } else { // !visible
+            if (mAnim != null) {
+                mAnim.cancel();
+            }
+            findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
+            findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
+            findViewById(R.id.training_mode_small_red_box).setVisibility(View.INVISIBLE);
+            findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.INVISIBLE);
         }
-
-        nonRedObj.setBackgroundColor(grayColor);
-        redObj.setBackgroundColor(redColor);
     }
 
     /**
@@ -95,15 +147,29 @@ public class TrainingActivity extends BaseActivity {
         mRedColor = bgColor;
     }
 
+    public void setTrainingMode(String mode) {
+        mTrainingMode = mode;
+    }
+
     public void setAnimating(boolean animating) {
         mAnimating = animating;
         if (mAnimating) {
-            mAnim.start();
-            nonRedObj.setRotation(0);
+            if (mAnim != null) {
+                mAnim.start();
+            }
+            if (mNonRedObj != null) {
+                mNonRedObj.setRotation(0);
+            }
         } else {
-            mAnim.cancel();
-            redObj.setRotation(0);
-            nonRedObj.setRotation(0);
+            if (mAnim != null) {
+                mAnim.cancel();
+            }
+            if (mRedObj != null) {
+                mRedObj.setRotation(0);
+            }
+            if (mNonRedObj != null) {
+                mNonRedObj.setRotation(0);
+            }
         }
     }
 }

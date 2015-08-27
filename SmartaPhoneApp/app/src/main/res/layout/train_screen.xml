@@ -34,6 +34,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"/>
 
+    <Spinner
+        android:id="@+id/train_mode"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="16dp"/>
+
     <Button
         android:id="@+id/train_start"
         android:layout_width="match_parent"
@@ -50,18 +56,10 @@
         android:visibility="gone" />
 
     <Switch
-        android:id="@+id/train_object_display_switch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Object display"
-        android:visibility="invisible" />
-
-    <Switch
         android:id="@+id/train_object_anim_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:text="Object animation"
         android:visibility="invisible" />

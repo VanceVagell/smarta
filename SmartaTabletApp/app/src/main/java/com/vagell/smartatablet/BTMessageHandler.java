@@ -71,7 +71,10 @@ public class BTMessageHandler extends Handler {
                             intent.putExtra(CalibrateActivity.CALIBRATION_COLOR_EXTRA, colorInt);
                             mActivity.startActivity(intent);
                         } else if (messageStr.contains("TrainingOn")) {
-                            String mapJson = messageStr.substring("GOTO TrainingOn".length());
+                            int prefixLength = "GOTO TrainingOn \"".length();
+                            int endOfModeIdx = messageStr.indexOf('\"', prefixLength);
+                            String mode = messageStr.substring(prefixLength, endOfModeIdx);
+                            String mapJson = messageStr.substring(endOfModeIdx + 1);
                             Map<String, RGBColor> colorMap = new Gson().fromJson(mapJson, new TypeToken<HashMap<String, RGBColor>>() {}.getType());
 
                             // TODO don't rely on these fragile names (share enums with phone app?)
@@ -81,12 +84,14 @@ public class BTMessageHandler extends Handler {
                             if (mActivity.getClass() == TrainingActivity.class) {
                                 ((TrainingActivity) mActivity).setRedColor(redColor.toIntColor());
                                 ((TrainingActivity) mActivity).setGrayColor(grayColor.toIntColor());
+                                ((TrainingActivity) mActivity).setTrainingMode(mode);
                                 ((TrainingActivity) mActivity).setObjVisible(true);
                             } else {
                                 intent = new Intent(mActivity, TrainingActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                                 intent.putExtra(TrainingActivity.TRAINING_RED_COLOR_EXTRA, redColor.toIntColor());
                                 intent.putExtra(TrainingActivity.TRAINING_GRAY_COLOR_EXTRA, grayColor.toIntColor());
+                                intent.putExtra(TrainingActivity.TRAINING_MODE_EXTRA, mode);
                                 mActivity.startActivity(intent);
                             }
                         } else if (messageStr.contains("TrainingOff")) {

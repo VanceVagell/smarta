@@ -110,7 +110,8 @@ public class MainActivity extends Activity {
     private BTConnectThread mBtConnectThread = null;
 
     private String mSelectedSubject = "";
-    private String mSelectedPhase = "";
+    private String mSelectedTestingPhase = "";
+    private String mSelectedTrainingMode = "";
     private String mOAuthToken = null;
     private BTMessageHandler mBtMessageHandler = null;
     private Date mSessionStartTime = null;
@@ -431,16 +432,24 @@ public class MainActivity extends Activity {
             }
         });
 
-        // Listen for changes in object display on/off
-        Switch objDisplaySwitch = (Switch) findViewById(R.id.train_object_display_switch);
-        objDisplaySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (!mTrainingStarted) {
+        // Populate training modes
+        spinner = (Spinner) findViewById(R.id.train_mode);
+        adapter = ArrayAdapter.createFromResource(this,
+                R.array.training_modes_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        // Listen for changes in mode selection
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                String newMode = (String) parent.getItemAtPosition(pos);
+                if (mSelectedTrainingMode.equals(newMode)) {
                     return;
                 }
+                mSelectedTrainingMode = newMode;
+            }
 
-                setTrainingObjectDisplayed(isChecked);
+            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
@@ -500,10 +509,10 @@ public class MainActivity extends Activity {
             }
         });
 
-        // Populate phases
+        // Populate testing phases
         spinner = (Spinner) findViewById(R.id.test_phase);
         adapter = ArrayAdapter.createFromResource(this,
-                R.array.phases_array, android.R.layout.simple_spinner_item);
+                R.array.testing_phases_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -511,10 +520,10 @@ public class MainActivity extends Activity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 String newPhase = (String) parent.getItemAtPosition(pos);
-                if (mSelectedPhase.equals(newPhase)) {
+                if (mSelectedTestingPhase.equals(newPhase)) {
                     return;
                 }
-                mSelectedPhase = newPhase;
+                mSelectedTestingPhase = newPhase;
             }
 
             public void onNothingSelected(AdapterView<?> parent) {
@@ -750,7 +759,7 @@ public class MainActivity extends Activity {
         }
 
         Log.d("LOG", "Saving trial data.");
-        new TrialDataSaverThread(this, mSelectedSubject, mSelectedPhase, trialData, mOAuthToken, mSessionStartTime).start();
+        new TrialDataSaverThread(this, mSelectedSubject, mSelectedTestingPhase, trialData, mOAuthToken, mSessionStartTime).start();
     }
 
     private synchronized void sendBtMessage(String message) {
@@ -1057,7 +1066,7 @@ public class MainActivity extends Activity {
             mTrialCount = 1;
 
             // Start session and recording video
-            String phase = mSelectedPhase.equals("Phase 1") ? "phase1" : "phase2";
+            String phase = mSelectedTestingPhase.equals("Phase 1") ? "phase1" : "phase2";
             sendBtMessage("STARTSESSION " + phase);
             sendBtMessage("RECORD Start " + getCurrentTimeString() + " - TESTING - " + mSelectedSubject);
 
@@ -1074,11 +1083,14 @@ public class MainActivity extends Activity {
 
         // Enable or disable various training UI elements depending on whether training is active.
         findViewById(R.id.train_subject).setEnabled(!started);
+        findViewById(R.id.train_mode).setEnabled(!started);
         findViewById(R.id.train_start).setVisibility(!started ? View.VISIBLE : View.GONE);
         findViewById(R.id.train_stop).setVisibility(started ? View.VISIBLE : View.GONE);
-        findViewById(R.id.train_object_display_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
         findViewById(R.id.train_object_anim_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
         findViewById(R.id.train_record_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
+
+        // If in "All red" training mode, disable object animation toggle
+        findViewById(R.id.train_object_anim_switch).setEnabled(!mSelectedTrainingMode.equals("All red"));
 
         if (!started) {
             stopTrainingAndSaveVideo();
@@ -1097,6 +1109,8 @@ public class MainActivity extends Activity {
             findViewById(R.id.train_timer).setVisibility(View.VISIBLE);
             mTrainingTimer.start();
         }
+
+        setTrainingObjectDisplayed(started);
     }
 
     private void setMainTabsEnabled(boolean enabled) {
@@ -1104,15 +1118,9 @@ public class MainActivity extends Activity {
     }
 
     private void setTrainingObjectDisplayed(boolean display) {
-        // Make sure switch matches this state.
-        Switch trainingObjectDisplayedSwitch = (Switch) findViewById(R.id.train_object_display_switch);
-        if (trainingObjectDisplayedSwitch.isChecked() != display) {
-            trainingObjectDisplayedSwitch.setChecked(display);
-        }
-
         if (display) {
             // TODO extract all these sendBtMessage calls to a model object that syncs via BT
-            sendBtMessage("GOTO TrainingOn " + new Gson().toJson(mColorMap));
+            sendBtMessage("GOTO TrainingOn \"" + mSelectedTrainingMode + "\" " + new Gson().toJson(mColorMap));
         } else {
             sendBtMessage("GOTO TrainingOff");
         }

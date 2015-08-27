@@ -38,7 +38,14 @@
         <item>Subject 5</item>
     </string-array>
 
-    <string-array name="phases_array">
+    <string-array name="training_modes_array">
+        <item>All red</item>
+        <item>Large red box</item>
+        <item>Small red box</item>
+        <item>Red and gray boxes</item>
+    </string-array>
+
+    <string-array name="testing_phases_array">
         <item>Phase 1</item>
         <item>Phase 2</item>
     </string-array>
