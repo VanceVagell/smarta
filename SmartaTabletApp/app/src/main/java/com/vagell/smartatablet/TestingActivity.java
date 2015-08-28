@@ -15,6 +15,8 @@ package com.vagell.smartatablet;
         limitations under the License.*/
 
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -166,6 +168,12 @@ public class TestingActivity extends BaseActivity {
                 mHandler.removeCallbacks(mTrialTimeoutRunnable);
                 if (trialData.subjectChoseCorrectly) {
                     Log.d("LOG", "Correct!");
+
+                    // Play a sound so animals know they did it right.
+                    MediaPlayer player = MediaPlayer.create(this, R.raw.whistle);
+                    player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    player.start();
+
                     ArduinoMessager.send(this, ArduinoMessager.ARDUINO_DISPENSE);
                 } else {
                     Log.d("LOG", "Incorrect.");

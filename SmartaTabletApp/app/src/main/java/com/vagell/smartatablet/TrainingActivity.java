@@ -41,8 +41,8 @@ public class TrainingActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         // Get passed-in info from the intent, including requested colors
-        mGrayColor = (Integer) getIntent().getExtras().get(TRAINING_RED_COLOR_EXTRA);
-        mRedColor = (Integer) getIntent().getExtras().get(TRAINING_GRAY_COLOR_EXTRA);
+        mGrayColor = (Integer) getIntent().getExtras().get(TRAINING_GRAY_COLOR_EXTRA);
+        mRedColor = (Integer) getIntent().getExtras().get(TRAINING_RED_COLOR_EXTRA);
         mTrainingMode = (String) getIntent().getExtras().get(TRAINING_MODE_EXTRA);
         if (mTrainingMode != null) {
             setObjVisible(true);
@@ -61,11 +61,10 @@ public class TrainingActivity extends BaseActivity {
         // Note that we don't actually hide the View, because we need the SurfaceView that
         // the media recorder uses to be on the screen. Otherwise video recording fails.
         if (visible) {
-            View leftObj = findViewById(R.id.training_left_color_block);
-            View rightObj = findViewById(R.id.training_right_color_block);
-
             // TODO remove fragile constants shared with client, should share versioned enum class or something
-            if (mTrainingMode.equals("All red")) {
+            if (mTrainingMode.equals("Blank")) {
+                // Do nothing :) Just a black screen. Still counts as active training mode.
+            } else if (mTrainingMode.equals("All red")) {
                 mRedObj = null;
                 mNonRedObj = null;
                 View obj = findViewById(R.id.training_mode_all_red);
@@ -91,6 +90,8 @@ public class TrainingActivity extends BaseActivity {
                 findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
                 findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.INVISIBLE);
             } else if (mTrainingMode.equals("Red and gray boxes")) {
+                View leftObj = findViewById(R.id.training_left_color_block);
+                View rightObj = findViewById(R.id.training_right_color_block);
                 boolean leftIsRed = randInt(0, 1) == 1;
                 if (leftIsRed) {
                     mRedObj = leftObj;

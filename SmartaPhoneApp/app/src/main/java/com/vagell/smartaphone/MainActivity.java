@@ -1089,25 +1089,24 @@ public class MainActivity extends Activity {
         findViewById(R.id.train_object_anim_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
         findViewById(R.id.train_record_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
 
-        // If in "All red" training mode, disable object animation toggle
-        findViewById(R.id.train_object_anim_switch).setEnabled(!mSelectedTrainingMode.equals("All red"));
+        // If in "Blank" or "All red" training mode, disable object animation toggle
+        boolean modeSupportsAnimation = !(mSelectedTrainingMode.equals("Blank") || mSelectedTrainingMode.equals("All red") );
+        findViewById(R.id.train_object_anim_switch).setEnabled(modeSupportsAnimation);
 
-        if (!started) {
+        if (started) {
+            setMainTabsEnabled(false);
+            setTrainingObjectAnimated(false);
+            findViewById(R.id.train_status).setVisibility(View.GONE);
+            findViewById(R.id.train_timer).setVisibility(View.VISIBLE);
+            mTrainingTimer.start();
+        } else {
             stopTrainingAndSaveVideo();
-            setTrainingObjectDisplayed(false);
             setTrainingObjectAnimated(false);
             setMainTabsEnabled(true);
             saveTrainingData(); // Save before stopping the timer.
             findViewById(R.id.train_status).setVisibility(View.VISIBLE);
             findViewById(R.id.train_timer).setVisibility(View.GONE);
             mTrainingTimer.stop(); // Do this last, so we can check time elapsed.
-        } else {
-            setMainTabsEnabled(false);
-            setTrainingObjectDisplayed(false);
-            setTrainingObjectAnimated(false);
-            findViewById(R.id.train_status).setVisibility(View.GONE);
-            findViewById(R.id.train_timer).setVisibility(View.VISIBLE);
-            mTrainingTimer.start();
         }
 
         setTrainingObjectDisplayed(started);

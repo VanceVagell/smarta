@@ -39,6 +39,7 @@
     </string-array>
 
     <string-array name="training_modes_array">
+        <item>Blank</item>
         <item>All red</item>
         <item>Large red box</item>
         <item>Small red box</item>

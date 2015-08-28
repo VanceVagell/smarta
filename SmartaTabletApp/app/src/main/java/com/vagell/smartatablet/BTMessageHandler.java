@@ -17,6 +17,8 @@ package com.vagell.smartatablet;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -100,8 +102,6 @@ public class BTMessageHandler extends Handler {
                             } else {
                                 intent = new Intent(mActivity, TrainingActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                intent.putExtra(TrainingActivity.TRAINING_RED_COLOR_EXTRA, Color.BLACK);
-                                intent.putExtra(TrainingActivity.TRAINING_GRAY_COLOR_EXTRA, Color.BLACK);
                                 mActivity.startActivity(intent);
                             }
                         } else if (messageStr.contains("Testing")) {
@@ -156,6 +156,13 @@ public class BTMessageHandler extends Handler {
                             }
                         }
                     } else if (messageStr.startsWith("DISPENSE")) {
+                        // TODO extract this dupe code (also found in TestingActivity)
+                        // Play a sound so animals know they did it right.
+                        MediaPlayer player = MediaPlayer.create(mActivity, R.raw.whistle);
+                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        player.start();
+
+                        // Then dispense food.
                         ArduinoMessager.send(mActivity, ArduinoMessager.ARDUINO_DISPENSE);
                     } else if (messageStr.startsWith("CONVEYORBACKFAR")) {
                         ArduinoMessager.send(mActivity, ArduinoMessager.ARDUINO_BACKFAR);
