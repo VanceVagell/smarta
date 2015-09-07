@@ -58,12 +58,28 @@ public class TrainingActivity extends BaseActivity {
     }
 
     public void setObjVisible(boolean visible) {
+        // Before switching modes, stop any previous animation. Note that we don't call
+        // setAnimating(false) because we want to keep the animating state.
+        if (mAnim != null) {
+            mAnim.cancel();
+        }
+        if (mRedObj != null) {
+            mRedObj.setRotation(0);
+        }
+        if (mNonRedObj != null) {
+            mNonRedObj.setRotation(0);
+        }
+        mAnim = null;
+        
         // Note that we don't actually hide the View, because we need the SurfaceView that
         // the media recorder uses to be on the screen. Otherwise video recording fails.
         if (visible) {
             // TODO remove fragile constants shared with client, should share versioned enum class or something
             if (mTrainingMode.equals("Blank")) {
-                // Do nothing :) Just a black screen. Still counts as active training mode.
+                findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_small_red_box).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.INVISIBLE);
             } else if (mTrainingMode.equals("All red")) {
                 mRedObj = null;
                 mNonRedObj = null;
@@ -122,9 +138,6 @@ public class TrainingActivity extends BaseActivity {
 
             setAnimating(mAnimating);
         } else { // !visible
-            if (mAnim != null) {
-                mAnim.cancel();
-            }
             findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
             findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
             findViewById(R.id.training_mode_small_red_box).setVisibility(View.INVISIBLE);

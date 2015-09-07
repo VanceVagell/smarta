@@ -447,6 +447,10 @@ public class MainActivity extends Activity {
                     return;
                 }
                 mSelectedTrainingMode = newMode;
+                if (mTrainingStarted) {
+                    // If in middle of training, display new mode
+                    updateTrainingDisplay(true);
+                }
             }
 
             public void onNothingSelected(AdapterView<?> parent) {
@@ -1083,15 +1087,10 @@ public class MainActivity extends Activity {
 
         // Enable or disable various training UI elements depending on whether training is active.
         findViewById(R.id.train_subject).setEnabled(!started);
-        findViewById(R.id.train_mode).setEnabled(!started);
         findViewById(R.id.train_start).setVisibility(!started ? View.VISIBLE : View.GONE);
         findViewById(R.id.train_stop).setVisibility(started ? View.VISIBLE : View.GONE);
         findViewById(R.id.train_object_anim_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
         findViewById(R.id.train_record_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
-
-        // If in "Blank" or "All red" training mode, disable object animation toggle
-        boolean modeSupportsAnimation = !(mSelectedTrainingMode.equals("Blank") || mSelectedTrainingMode.equals("All red") );
-        findViewById(R.id.train_object_anim_switch).setEnabled(modeSupportsAnimation);
 
         if (started) {
             setMainTabsEnabled(false);
@@ -1109,15 +1108,21 @@ public class MainActivity extends Activity {
             mTrainingTimer.stop(); // Do this last, so we can check time elapsed.
         }
 
-        setTrainingObjectDisplayed(started);
+        updateTrainingDisplay(started);
     }
 
     private void setMainTabsEnabled(boolean enabled) {
         mTabs.getTabWidget().setEnabled(enabled);
     }
 
-    private void setTrainingObjectDisplayed(boolean display) {
+    private void updateTrainingDisplay(boolean display) {
         if (display) {
+            // If in "Blank" or "All red" training mode, disable object animation toggle
+            boolean modeSupportsAnimation = !(mSelectedTrainingMode.equals("Blank") || mSelectedTrainingMode.equals("All red") );
+            Switch animSwitch = (Switch) findViewById(R.id.train_object_anim_switch);
+            animSwitch.setChecked(animSwitch.isChecked() && modeSupportsAnimation); // Turn off if needed
+            animSwitch.setEnabled(modeSupportsAnimation);
+
             // TODO extract all these sendBtMessage calls to a model object that syncs via BT
             sendBtMessage("GOTO TrainingOn \"" + mSelectedTrainingMode + "\" " + new Gson().toJson(mColorMap));
         } else {
