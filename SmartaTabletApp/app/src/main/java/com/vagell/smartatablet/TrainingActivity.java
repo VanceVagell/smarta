@@ -70,7 +70,7 @@ public class TrainingActivity extends BaseActivity {
             mNonRedObj.setRotation(0);
         }
         mAnim = null;
-        
+
         // Note that we don't actually hide the View, because we need the SurfaceView that
         // the media recorder uses to be on the screen. Otherwise video recording fails.
         if (visible) {
@@ -105,20 +105,25 @@ public class TrainingActivity extends BaseActivity {
                 findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
                 findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
                 findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.INVISIBLE);
-            } else if (mTrainingMode.equals("Red and gray boxes")) {
+            } else if (mTrainingMode.equals("Red left gray right")) {
                 View leftObj = findViewById(R.id.training_left_color_block);
                 View rightObj = findViewById(R.id.training_right_color_block);
-                boolean leftIsRed = randInt(0, 1) == 1;
-                if (leftIsRed) {
-                    mRedObj = leftObj;
-                    mNonRedObj = rightObj;
-                } else {
-                    mRedObj = rightObj;
-                    mNonRedObj = leftObj;
-                }
-
-                mNonRedObj.setBackgroundColor(mGrayColor);
+                mRedObj = leftObj;
+                mNonRedObj = rightObj;
                 mRedObj.setBackgroundColor(mRedColor);
+                mNonRedObj.setBackgroundColor(mGrayColor);
+
+                findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.VISIBLE);
+                findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_large_red_box).setVisibility(View.INVISIBLE);
+                findViewById(R.id.training_mode_small_red_box).setVisibility(View.INVISIBLE);
+            } else if (mTrainingMode.equals("Gray left red right")) {
+                View leftObj = findViewById(R.id.training_left_color_block);
+                View rightObj = findViewById(R.id.training_right_color_block);
+                mRedObj = rightObj;
+                mNonRedObj = leftObj;
+                mRedObj.setBackgroundColor(mRedColor);
+                mNonRedObj.setBackgroundColor(mGrayColor);
 
                 findViewById(R.id.training_mode_red_and_gray_boxes).setVisibility(View.VISIBLE);
                 findViewById(R.id.training_mode_all_red).setVisibility(View.INVISIBLE);
