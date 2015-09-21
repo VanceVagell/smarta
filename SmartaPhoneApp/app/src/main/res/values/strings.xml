@@ -43,13 +43,10 @@
         <item>All red</item>
         <item>Large red box</item>
         <item>Small red box</item>
+        <item>Red left</item>
+        <item>Red right</item>
         <item>Red left gray right</item>
         <item>Gray left red right</item>
-    </string-array>
-
-    <string-array name="testing_phases_array">
-        <item>Phase 1</item>
-        <item>Phase 2</item>
     </string-array>
 
     <string-array name="calibration_color_sets_array">

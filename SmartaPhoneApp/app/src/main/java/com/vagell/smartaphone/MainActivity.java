@@ -47,12 +47,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.Switch;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,7 +76,6 @@ import java.util.Set;
 
 
 public class MainActivity extends Activity {
-    private TabHost mTabs = null;
 
     private static final String BT_MESSAGE_DIVIDER = "***";
 
@@ -88,9 +87,18 @@ public class MainActivity extends Activity {
     private static final String COLOR_B = "B";
 
     private String mCalibrationMode = CALIBRATION_MODE_NONE;
-    private boolean mIsTrainingTab = true;
     private static final int FULL_DISPENSE_COUNT = 7;
     private int mDispenseRemaining = FULL_DISPENSE_COUNT; // how many food rewards are left to dispense
+
+    // TODO refactor all this nonsense out into activities. complex because BT stack needs to be
+    // reworked to support cross-Activity use
+    private static final int SCREEN_SELECT = 0;
+    private static final int SCREEN_TRAIN = 1;
+    private static final int SCREEN_TEST = 2;
+    private int mCurrentScreen = SCREEN_SELECT;
+
+    private static final String PHASE_1 = "Phase 1";
+    private static final String PHASE_2 = "Phase 2";
 
     private static String mSpreadsheetName = null;
 
@@ -110,7 +118,7 @@ public class MainActivity extends Activity {
     private BTConnectThread mBtConnectThread = null;
 
     private String mSelectedSubject = "";
-    private String mSelectedTestingPhase = "";
+    private String mSelectedTestingPhase = PHASE_1;
     private String mSelectedTrainingMode = "";
     private String mOAuthToken = null;
     private BTMessageHandler mBtMessageHandler = null;
@@ -134,8 +142,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main_activity);
 
         // Setup various UI components
-        setupMainTabs();
         setupCalibrationScreen();
+        setupSelectScreen();
         setupTestingScreen();
         setupTrainingScreen();
 
@@ -223,18 +231,46 @@ public class MainActivity extends Activity {
 
     // TODO extract into a calibration activity. complex because BT stack needs updating to work across activities.
     private void setCalibrating(boolean calibrating) {
-        findViewById(R.id.train_container).setVisibility(calibrating ? View.GONE : (mIsTrainingTab ? View.VISIBLE : View.GONE));
-        findViewById(R.id.test_container).setVisibility(calibrating ? View.GONE : (!mIsTrainingTab ? View.VISIBLE : View.GONE));
-        findViewById(R.id.calibrate_container).setVisibility(calibrating ? View.VISIBLE : View.GONE);
-        findViewById(android.R.id.tabs).setVisibility(calibrating ? View.GONE : View.VISIBLE);
-
-        if (calibrating) {
+        // Calibration isn't handled as a normal screen, because it's a temporary mode that can
+        // come up from any screen.
+        if (!calibrating) {
+            findViewById(R.id.calibrate_container).setVisibility(View.GONE);
+            gotoScreen(mCurrentScreen);
+        } else {
+            // Hide current screen
+            findViewById(R.id.select_container).setVisibility(View.GONE);
+            findViewById(R.id.train_container).setVisibility(View.GONE);
+            findViewById(R.id.test_container).setVisibility(View.GONE);
             setTitle("Colors");
             sendBtMessage("GOTO Calibrate1 " + new Gson().toJson(mColorBeingCalibrated));
-        } else {
-            setTitle(R.string.app_name);
-            gotoTab(mIsTrainingTab ? 0 : 1); // Trigger host tabs entry flow (e.g. show testing screen on tablet)
+            findViewById(R.id.calibrate_container).setVisibility(View.VISIBLE);
         }
+    }
+
+    // TODO extract all this stuff into activities.
+    private void gotoScreen(int screen) {
+        mCurrentScreen = screen;
+
+        switch (screen) {
+            case SCREEN_SELECT:
+                setTitle(R.string.app_name);
+                break;
+            case SCREEN_TRAIN:
+                setTitle("Training " + mSelectedSubject);
+                // TODOV hide overflow
+                break;
+            case SCREEN_TEST:
+                setTitle("Testing " + mSelectedSubject);
+                ((TextView) findViewById(R.id.test_phase_label)).setText(mSelectedTestingPhase);
+                break;
+            default:
+                Log.d("LOG", "Tried to go to unknown screen: " + screen);
+                break;
+        }
+
+        findViewById(R.id.select_container).setVisibility(screen == SCREEN_SELECT ? View.VISIBLE : View.GONE);
+        findViewById(R.id.train_container).setVisibility(screen == SCREEN_TRAIN ? View.VISIBLE : View.GONE);
+        findViewById(R.id.test_container).setVisibility(screen == SCREEN_TEST ? View.VISIBLE : View.GONE);
     }
 
     private void getOAuthTokenInAsyncTask() {
@@ -412,130 +448,13 @@ public class MainActivity extends Activity {
     private boolean mTrainingStarted = false;
 
     private void setupTrainingScreen() {
-        // Populate list of subjects
-        Spinner spinner = (Spinner) findViewById(R.id.train_subject);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.subjects_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        // Listen for changes in subject selection
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                String newSubject = (String) parent.getItemAtPosition(pos);
-                if (mSelectedSubject.equals(newSubject)) {
-                    return;
-                }
-                mSelectedSubject = newSubject;
-            }
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        // Populate training modes
-        spinner = (Spinner) findViewById(R.id.train_mode);
-        adapter = ArrayAdapter.createFromResource(this,
-                R.array.training_modes_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        // Listen for changes in mode selection
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                String newMode = (String) parent.getItemAtPosition(pos);
-                if (mSelectedTrainingMode.equals(newMode)) {
-                    return;
-                }
-                mSelectedTrainingMode = newMode;
-                if (mTrainingStarted) {
-                    // If in middle of training, display new mode
-                    updateTrainingDisplay(true);
-                }
-            }
-
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        // Listen for changes in object animation on/off
-        Switch objAnimSwitch = (Switch) findViewById(R.id.train_object_anim_switch);
-        objAnimSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (!mTrainingStarted) {
-                    return;
-                }
-
-                setTrainingObjectAnimated(isChecked);
-            }
-        });
-
-        // Listen for changes in video recording on/off
-        Switch videoRecordingSwitch = (Switch) findViewById(R.id.train_record_switch);
-        videoRecordingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (!mTrainingStarted) {
-                    return;
-                }
-
-                if (isChecked) {
-                    startRecordingTrainingVideo();
-                } else {
-                    stopTrainingAndSaveVideo();
-                }
-            }
-        });
-
         // Create timer
         mTrainingTimer = new RenderedTimer(this, (TextView) findViewById(R.id.train_timer));
     }
 
     private void setupTestingScreen() {
-        // Populate list of subjects
-        Spinner spinner = (Spinner) findViewById(R.id.test_subject);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.subjects_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        // Listen for changes in subject selection
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                String newSubject = (String) parent.getItemAtPosition(pos);
-                if (mSelectedSubject.equals(newSubject)) {
-                    return;
-                }
-                mSelectedSubject = newSubject;
-            }
-
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        // Populate testing phases
-        spinner = (Spinner) findViewById(R.id.test_phase);
-        adapter = ArrayAdapter.createFromResource(this,
-                R.array.testing_phases_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        // Listen for changes in phase selection
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                String newPhase = (String) parent.getItemAtPosition(pos);
-                if (mSelectedTestingPhase.equals(newPhase)) {
-                    return;
-                }
-                mSelectedTestingPhase = newPhase;
-            }
-
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
         // Create timer
-        mTestingTimer = new RenderedTimer(this, (TextView) findViewById(R.id.test_timer));
+        mTestingTimer = new RenderedTimer(this, (TextView) findViewById(R.id.trial_timer1));
     }
 
     private void handleCalibrationColorSetChanged() {
@@ -578,7 +497,7 @@ public class MainActivity extends Activity {
         // to beginning of input field after each character typed.
         // TODO instead restore it to previous position
         View focusedView = getCurrentFocus();
-        if (focusedView.getClass() == EditText.class) {
+        if (focusedView != null && focusedView.getClass() == EditText.class) {
             EditText editText = ((EditText) focusedView);
             int endOfText = editText.length();
             Editable text = editText.getText();
@@ -625,43 +544,14 @@ public class MainActivity extends Activity {
         ((EditText) findViewById(R.id.editTextB)).addTextChangedListener(new EditTextSettingUpdater(COLOR_B));
     }
 
-    private void setupMainTabs() {
-        mTabs = (TabHost) findViewById(R.id.tab_host);
-        mTabs.setup();
-
-        TabHost.TabSpec spec = mTabs.newTabSpec("Train");
-        spec.setContent(R.id.train_container);
-        spec.setIndicator("Train");
-        mTabs.addTab(spec);
-
-        spec = mTabs.newTabSpec("Test");
-        spec.setContent(R.id.test_container);
-        spec.setIndicator("Test");
-        mTabs.addTab(spec);
-
-        mTabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            @Override
-            public void onTabChanged(String tabId) {
-                int tabIdx = mTabs.getCurrentTab();
-                gotoTab(tabIdx);
-            }
-        });
+    private void setupSelectScreen() {
+        // Populate the list of subject names
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_list_item_1,
+                getResources().getStringArray(R.array.subjects_array));
+        ((ListView) findViewById(R.id.subject_names)).setAdapter(arrayAdapter);
     }
-
-
-    private void gotoTab(int tabIdx) {
-        switch (tabIdx) {
-            case 0:
-                mIsTrainingTab = true;
-                sendBtMessage("GOTO TrainingOff");
-                break;
-            case 1:
-                mIsTrainingTab = false;
-                sendBtMessage("GOTO Testing " + new Gson().toJson(mColorMap));
-                break;
-        }
-    }
-
 
     @Override
     protected void onResume() {
@@ -701,8 +591,8 @@ public class MainActivity extends Activity {
                         public void handleMessage(Message message) {
                             switch (message.what) {
                                 case BTConnectThread.MESSAGE_BT_CONNECTED:
-                                    findViewById(R.id.connecting_message).setVisibility(View.INVISIBLE);
-                                    mTabs.setVisibility(View.VISIBLE);
+                                    findViewById(R.id.connecting_message).setVisibility(View.GONE);
+                                    findViewById(R.id.main_content).setVisibility(View.VISIBLE);
                                     break;
                                 // TODO add a case for MESSAGE_BT_CONNECT_FAILED so we can retry (requires extracting this handler to avoid recursive ref)
                                 default:
@@ -742,6 +632,21 @@ public class MainActivity extends Activity {
 
     private int mTrialCount = 1;
     private static final int NUM_TRIALS_PER_SESSION = 7;
+    private static final int NO_ID = -1;
+
+    private void highlightTestingRow(int previousTimerId, int previousRowId, int timerId, int rowId, int labelId, int iconId) {
+        if (previousTimerId != NO_ID) {
+            findViewById(previousTimerId).setVisibility(View.INVISIBLE);
+        }
+        findViewById(timerId).setVisibility(View.VISIBLE);
+        mTestingTimer = new RenderedTimer(this, (TextView) findViewById(timerId));
+        if (previousRowId != NO_ID) {
+            findViewById(previousRowId).setBackgroundColor(getResources().getColor(R.color.transparent));
+        }
+        findViewById(rowId).setBackgroundColor(getResources().getColor(R.color.light_gray));
+        ((TextView) findViewById(labelId)).setTextColor(getResources().getColor(R.color.dark_text));
+        findViewById(iconId).setAlpha(0.87f);
+    }
 
     private synchronized void handleTrialData(TrialData trialData) {
         mTrialCount++;
@@ -749,8 +654,35 @@ public class MainActivity extends Activity {
         if (mTrialCount > NUM_TRIALS_PER_SESSION) {
             setTestingStarted(false);
         } else {
+            // TODO setup a data binding instead of manually twiddling all of these UI settings.
+            switch (mTrialCount) {
+                case 1:
+                    highlightTestingRow(NO_ID, NO_ID, R.id.trial_timer1, R.id.test_trial_row1, R.id.test_trial_label1, R.id.test_trial_icon1);
+                    break;
+                case 2:
+                    highlightTestingRow(R.id.trial_timer1, R.id.trial_timer1, R.id.trial_timer2, R.id.test_trial_row2, R.id.test_trial_label2, R.id.test_trial_icon2);
+                    break;
+                case 3:
+                    highlightTestingRow(R.id.trial_timer2, R.id.trial_timer2, R.id.trial_timer3, R.id.test_trial_row3, R.id.test_trial_label3, R.id.test_trial_icon3);
+                    break;
+                case 4:
+                    highlightTestingRow(R.id.trial_timer3, R.id.trial_timer3, R.id.trial_timer4, R.id.test_trial_row4, R.id.test_trial_label4, R.id.test_trial_icon4);
+                    break;
+                case 5:
+                    highlightTestingRow(R.id.trial_timer4, R.id.trial_timer4, R.id.trial_timer5, R.id.test_trial_row5, R.id.test_trial_label5, R.id.test_trial_icon5);
+                    break;
+                case 6:
+                    highlightTestingRow(R.id.trial_timer5, R.id.trial_timer5, R.id.trial_timer6, R.id.test_trial_row6, R.id.test_trial_label6, R.id.test_trial_icon6);
+                    break;
+                case 7:
+                    highlightTestingRow(R.id.trial_timer6, R.id.trial_timer6, R.id.trial_timer7, R.id.test_trial_row7, R.id.test_trial_label7, R.id.test_trial_icon7);
+                    break;
+                default:
+                    Log.d("LOG", "Unexpected trial count: " + mTrialCount);
+                    break;
+            }
+
             mTestingTimer.startCountDown(35);
-            ((TextView) findViewById(R.id.test_count)).setText("Trial " + mTrialCount + " of 7");
         }
 
         if (trialData.timedOut) {
@@ -1045,83 +977,68 @@ public class MainActivity extends Activity {
     private void setTestingStarted(boolean started) {
         mTestingStarted = started;
         if (started) {
+            sendBtMessage("GOTO Testing " + new Gson().toJson(mColorMap));
             mSessionStartTime = new Date();
-        }
 
-        // Enable or disable various testing UI elements depending on whether testing is active.
-        findViewById(R.id.test_subject).setEnabled(!started);
-        findViewById(R.id.test_phase).setEnabled(!started);
-        findViewById(R.id.test_start).setVisibility(started ? View.GONE : View.VISIBLE);
-        findViewById(R.id.test_stop).setVisibility(started ? View.VISIBLE : View.GONE);
+            mTrialCount = 1;
 
-        if (!started) {
+            // Start session and recording video
+            String phase = mSelectedTestingPhase.equals(PHASE_1) ? "phase1" : "phase2";
+            sendBtMessage("STARTSESSION " + phase);
+            sendBtMessage("RECORD Start " + getCurrentTimeString() + " - TESTING - " + mSelectedSubject);
+            highlightTestingRow(NO_ID, NO_ID, R.id.trial_timer1, R.id.test_trial_row1, R.id.test_trial_label1, R.id.test_trial_icon1);
+            mTestingTimer.startCountDown(30);
+        } else {
             // We don't have any data to save, wait for tablet to send it to us.
 
             // Tell tablet to stop running trials
             sendBtMessage("RECORD Stop");
             sendBtMessage("ABORTTESTING");
 
-            // Update the UI
-            setMainTabsEnabled(true);
-            findViewById(R.id.test_status).setVisibility(View.VISIBLE);
-            findViewById(R.id.test_details).setVisibility(View.GONE);
             mTestingTimer.stop();
-        } else {
-            mTrialCount = 1;
 
-            // Start session and recording video
-            String phase = mSelectedTestingPhase.equals("Phase 1") ? "phase1" : "phase2";
-            sendBtMessage("STARTSESSION " + phase);
-            sendBtMessage("RECORD Start " + getCurrentTimeString() + " - TESTING - " + mSelectedSubject);
-
-            ((TextView) findViewById(R.id.test_count)).setText("Trial 1 of 7");
-            findViewById(R.id.test_status).setVisibility(View.GONE);
-            findViewById(R.id.test_details).setVisibility(View.VISIBLE);
-            setMainTabsEnabled(false);
-            mTestingTimer.startCountDown(30);
+            // Reset all trial rows
+            // TODO use a data binding instead, so don't need to twiddle all these UI settings
+            resetTestingRow(R.id.trial_timer1, R.id.test_trial_row1, R.id.test_trial_label1, R.id.test_trial_icon1);
+            resetTestingRow(R.id.trial_timer2, R.id.test_trial_row2, R.id.test_trial_label2, R.id.test_trial_icon2);
+            resetTestingRow(R.id.trial_timer3, R.id.test_trial_row3, R.id.test_trial_label3, R.id.test_trial_icon3);
+            resetTestingRow(R.id.trial_timer4, R.id.test_trial_row4, R.id.test_trial_label4, R.id.test_trial_icon4);
+            resetTestingRow(R.id.trial_timer5, R.id.test_trial_row5, R.id.test_trial_label5, R.id.test_trial_icon5);
+            resetTestingRow(R.id.trial_timer6, R.id.test_trial_row6, R.id.test_trial_label6, R.id.test_trial_icon6);
+            resetTestingRow(R.id.trial_timer7, R.id.test_trial_row7, R.id.test_trial_label7, R.id.test_trial_icon7);
         }
+    }
+
+    private void resetTestingRow(int timerId, int rowId, int labelId, int iconId) {
+        findViewById(timerId).setVisibility(View.GONE);
+        findViewById(rowId).setBackgroundColor(getResources().getColor(R.color.light_gray));
+        ((TextView) findViewById(labelId)).setTextColor(getResources().getColor(R.color.light_gray));
+        findViewById(iconId).setAlpha(0.54f);
+        ((ImageView) findViewById(iconId)).setImageResource(R.drawable.ic_help_black_24dp);
     }
 
     private void setTrainingStarted(boolean started) {
         mTrainingStarted = started;
 
-        // Enable or disable various training UI elements depending on whether training is active.
-        findViewById(R.id.train_subject).setEnabled(!started);
-        findViewById(R.id.train_start).setVisibility(!started ? View.VISIBLE : View.GONE);
-        findViewById(R.id.train_stop).setVisibility(started ? View.VISIBLE : View.GONE);
-        findViewById(R.id.train_object_anim_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
-        findViewById(R.id.train_record_switch).setVisibility(started ? View.VISIBLE : View.INVISIBLE);
-
         if (started) {
-            setMainTabsEnabled(false);
             setTrainingObjectAnimated(false);
-            findViewById(R.id.train_status).setVisibility(View.GONE);
-            findViewById(R.id.train_timer).setVisibility(View.VISIBLE);
             mTrainingTimer.start();
         } else {
             stopTrainingAndSaveVideo();
             setTrainingObjectAnimated(false);
-            setMainTabsEnabled(true);
             saveTrainingData(); // Save before stopping the timer.
-            findViewById(R.id.train_status).setVisibility(View.VISIBLE);
-            findViewById(R.id.train_timer).setVisibility(View.GONE);
             mTrainingTimer.stop(); // Do this last, so we can check time elapsed.
         }
 
         updateTrainingDisplay(started);
     }
 
-    private void setMainTabsEnabled(boolean enabled) {
-        mTabs.getTabWidget().setEnabled(enabled);
-    }
-
     private void updateTrainingDisplay(boolean display) {
         if (display) {
             // If in "Blank" or "All red" training mode, disable object animation toggle
             boolean modeSupportsAnimation = !(mSelectedTrainingMode.equals("Blank") || mSelectedTrainingMode.equals("All red") );
-            Switch animSwitch = (Switch) findViewById(R.id.train_object_anim_switch);
-            animSwitch.setChecked(animSwitch.isChecked() && modeSupportsAnimation); // Turn off if needed
-            animSwitch.setEnabled(modeSupportsAnimation);
+            ImageButton animButton = (ImageButton) findViewById(R.id.training_animate);
+            animButton.setEnabled(modeSupportsAnimation);
 
             // TODO extract all these sendBtMessage calls to a model object that syncs via BT
             sendBtMessage("GOTO TrainingOn \"" + mSelectedTrainingMode + "\" " + new Gson().toJson(mColorMap));
@@ -1132,10 +1049,8 @@ public class MainActivity extends Activity {
 
     private void setTrainingObjectAnimated(boolean animated) {
         // Make sure switch matches this state.
-        Switch trainingObjectAnimatedSwitch = (Switch) findViewById(R.id.train_object_anim_switch);
-        if (trainingObjectAnimatedSwitch.isChecked() != animated) {
-            trainingObjectAnimatedSwitch.setChecked(animated);
-        }
+        ImageButton animButton = (ImageButton) findViewById(R.id.training_animate);
+        animButton.setBackgroundColor(animated ? getResources().getColor(R.color.dark_gray) : getResources().getColor(R.color.transparent));
 
         if (animated) {
             // TODO extract all these sendBtMessage calls to a model object that syncs via BT
@@ -1145,23 +1060,17 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void startRecordingTrainingVideo() {
-        // Make sure switch matches this state.
-        Switch trainingVideoRecordingSwitch = (Switch) findViewById(R.id.train_record_switch);
-        if (!trainingVideoRecordingSwitch.isChecked()) {
-            trainingVideoRecordingSwitch.setChecked(true);
-        }
+    private boolean mRecordingTrainingVideo = false;
 
+    private void startRecordingTrainingVideo() {
+        mRecordingTrainingVideo = true;
+        findViewById(R.id.training_record).setBackgroundColor(getResources().getColor(R.color.dark_gray));
         sendBtMessage("RECORD Start " + getCurrentTimeString() + " - TRAINING - " + mSelectedSubject);
     }
 
     private void stopTrainingAndSaveVideo() {
-        // Make sure switch matches this state.
-        Switch trainingVideoRecordingSwitch = (Switch) findViewById(R.id.train_record_switch);
-        if (trainingVideoRecordingSwitch.isChecked()) {
-            trainingVideoRecordingSwitch.setChecked(false);
-        }
-
+        mRecordingTrainingVideo = false;
+        findViewById(R.id.training_record).setBackgroundColor(getResources().getColor(R.color.transparent));
         sendBtMessage("RECORD Stop");
     }
 
@@ -1201,15 +1110,34 @@ public class MainActivity extends Activity {
             mDispenseRemaining = dispenseRemaining;
         }
         ((Button) findViewById(R.id.train_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
-        ((Button) findViewById(R.id.test_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
     }
 
-    public void testStartClicked(View v) {
+    public void startTest1Clicked(View v) {
+        mSelectedTestingPhase = PHASE_1;
+        mSelectedSubject = ((ListView) findViewById(R.id.subject_names)).getSelectedItem().toString();
+        gotoScreen(SCREEN_TEST);
         setTestingStarted(true);
     }
 
-    public void testStopClicked(View v) {
-        setTestingStarted(false);
+    public void startTest2Clicked(View v) {
+        mSelectedTestingPhase = PHASE_2;
+        mSelectedSubject = ((ListView) findViewById(R.id.subject_names)).getSelectedItem().toString();
+        gotoScreen(SCREEN_TEST);
+        setTestingStarted(true);
+    }
+
+    public void startTrainingClicked(View v) {
+        mSelectedSubject = ((ListView) findViewById(R.id.subject_names)).getSelectedItem().toString();
+        gotoScreen(SCREEN_TRAIN);
+        setTrainingStarted(true);
+    }
+
+    public void trainRecordClicked(View v) {
+        if (mRecordingTrainingVideo) {
+            stopTrainingAndSaveVideo();
+        } else {
+            startRecordingTrainingVideo();
+        }
     }
 
     public void conveyorBackClicked(View v) {
