@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/gray"
+        android:paddingLeft="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/light_text"
+            android:textSize="14sp"
+            android:text="Select a subject"
+            android:textStyle="bold"
+            android:gravity="center_vertical"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/subject_names"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:gravity="bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:background="@color/gray">
+
+            <Button
+                android:id="@+id/start_test_1"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:onClick="startTest1Clicked"
+                android:background="@color/white"
+                android:textColor="@color/light_text"
+                android:text="Test 1" />
+
+            <Button
+                android:id="@+id/start_test_2"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:onClick="startTest2Clicked"
+                android:background="@color/white"
+                android:textColor="@color/light_text"
+                android:text="Test 2" />
+
+            <Button
+                android:id="@+id/start_training"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_alignParentBottom="true"
+                android:layout_weight="1"
+                android:onClick="startTrainingClicked"
+                android:background="@color/primary"
+                android:textColor="@color/white"
+                android:text="Train" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</LinearLayout>

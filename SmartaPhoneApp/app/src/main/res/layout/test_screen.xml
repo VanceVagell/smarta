@@ -4,110 +4,276 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/page_bg"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/test_status"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
-        android:text="Not testing"
-        android:textColor="@color/very_light_text"
-        android:textSize="28dp"
-        android:gravity="center"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
-        android:id="@+id/test_details"
-        android:visibility="gone"
-        android:gravity="center">
+        android:layout_height="48dp"
+        android:background="@color/gray"
+        android:paddingLeft="16dp">
 
         <TextView
-            android:layout_marginBottom="16dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Trial 1 of 7"
-            android:id="@+id/test_count"
-            android:textColor="@color/dark_text"
-            android:textSize="28dp"
-            android:layout_alignParentLeft="true"/>
+            android:id="@+id/test_phase_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/light_text"
+            android:textSize="14sp"
+            android:text="Phase 1"
+            android:textStyle="bold"
+            android:gravity="center_vertical"/>
 
-        <TextView
-            android:layout_marginBottom="16dp"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="00:00"
-            android:id="@+id/test_timer"
-            android:textColor="@color/dark_text"
-            android:textSize="28dp"
-            android:layout_alignParentRight="true"/>
+    </LinearLayout>
 
-    </RelativeLayout>
-
-    <Spinner
-        android:id="@+id/test_subject"
-        android:layout_height="wrap_content"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginBottom="16dp"/>
-
-    <Spinner
-        android:id="@+id/test_phase"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/test_start"
-        android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:onClick="testStartClicked"
-        android:text="Start" />
-
-    <Button
-        android:id="@+id/test_stop"
-        android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:onClick="testStopClicked"
-        android:text="Stop"
-        android:visibility="gone" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="bottom">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp">
 
         <LinearLayout
+            android:id="@+id/test_trial_row1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:gravity="left|center_vertical"
+            android:background="@color/light_gray">
 
-            <Button
-                android:id="@+id/test_conveyor_back"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginRight="4dp"
-                android:layout_weight="1"
-                android:onClick="conveyorBackClicked"
-                android:text="Rewind" />
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="32dp"
+                android:src="@drawable/ic_help_black_24dp"
+                android:alpha="0.87"/>
 
-            <Button
-                android:id="@+id/test_dispense"
+            <TextView
                 android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="4dp"
                 android:layout_weight="1"
-                android:onClick="dispenseClicked"
-                android:text="Dispense (7)" />
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/dark_text"
+                android:text="Trial 1"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="00:00"
+                android:textAlignment="textEnd"
+                android:layout_marginRight="24dp"
+                android:visibility="visible"/>
 
         </LinearLayout>
 
-    </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/test_trial_row2"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:gravity="left|center_vertical">
 
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="32dp"
+                android:src="@drawable/ic_help_black_24dp"
+                android:alpha="0.54"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="Trial 2"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="00:00"
+                android:textAlignment="textEnd"
+                android:layout_marginRight="24dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/test_trial_row3"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:gravity="left|center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="32dp"
+                android:src="@drawable/ic_help_black_24dp"
+                android:alpha="0.54"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="Trial 3"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="00:00"
+                android:textAlignment="textEnd"
+                android:layout_marginRight="24dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/test_trial_row4"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:gravity="left|center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="32dp"
+                android:src="@drawable/ic_help_black_24dp"
+                android:alpha="0.54"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="Trial 4"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="00:00"
+                android:textAlignment="textEnd"
+                android:layout_marginRight="24dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/test_trial_row5"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:gravity="left|center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="32dp"
+                android:src="@drawable/ic_help_black_24dp"
+                android:alpha="0.54"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="Trial 5"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="00:00"
+                android:textAlignment="textEnd"
+                android:layout_marginRight="24dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/test_trial_row6"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:gravity="left|center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="32dp"
+                android:src="@drawable/ic_help_black_24dp"
+                android:alpha="0.54"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="Trial 6"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="00:00"
+                android:textAlignment="textEnd"
+                android:layout_marginRight="24dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/test_trial_row7"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:gravity="left|center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="32dp"
+                android:src="@drawable/ic_help_black_24dp"
+                android:alpha="0.54"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="Trial 7"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:textColor="@color/light_text"
+                android:text="00:00"
+                android:textAlignment="textEnd"
+                android:layout_marginRight="24dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

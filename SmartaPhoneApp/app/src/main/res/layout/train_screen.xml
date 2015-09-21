@@ -4,104 +4,444 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/page_bg"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/train_status"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
-        android:text="Not training"
-        android:textColor="@color/very_light_text"
-        android:textSize="28dp"
-        android:gravity="center"/>
+        android:layout_height="48dp"
+        android:background="@color/gray"
+        android:paddingLeft="16dp">
 
-    <TextView
-        android:id="@+id/train_timer"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
-        android:text="00:00"
-        android:textColor="@color/dark_text"
-        android:textSize="28dp"
-        android:visibility="gone"
-        android:gravity="center"/>
+        <TextView
+            android:id="@+id/train_timer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/light_text"
+            android:textSize="14sp"
+            android:text="00:00"
+            android:textStyle="bold"
+            android:gravity="center_vertical"/>
 
-    <Spinner
-        android:id="@+id/train_subject"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"/>
+    </LinearLayout>
 
-    <Spinner
-        android:id="@+id/train_mode"
-        android:layout_height="wrap_content"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <Button
-        android:id="@+id/train_start"
-        android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:onClick="trainStartClicked"
-        android:text="Start" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="22dp"
+            android:paddingRight="10dp">
 
-    <Button
-        android:id="@+id/train_stop"
-        android:layout_width="match_parent"
-        android:layout_height="46dp"
-        android:onClick="trainStopClicked"
-        android:text="Stop"
-        android:visibility="gone" />
+            <!-- row 1 -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="92dp"
+                android:orientation="horizontal">
 
-    <Switch
-        android:id="@+id/train_object_anim_switch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Object animation"
-        android:visibility="invisible" />
+                <!-- mode: all black -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
-    <Switch
-        android:id="@+id/train_record_switch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Video recording"
-        android:visibility="invisible" />
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="112dp"
+                        android:layout_height="72dp"
+                        android:background="#000000"
+                        android:orientation="horizontal">
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/training_mode_checkmark1"
+                        android:src="@drawable/blue_check"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginTop="36dp"/>
+
+                </LinearLayout>
+
+                <!-- mode: all red -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:alpha="0.38">
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="112dp"
+                        android:layout_height="72dp"
+                        android:background="#F44336"
+                        android:orientation="horizontal">
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/training_mode_checkmark2"
+                        android:src="@drawable/blue_check"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginTop="36dp"
+                        android:visibility="invisible"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- row 2 -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="92dp"
+                android:orientation="horizontal">
+
+                <!-- mode: large red box -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:alpha="0.38">
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="112dp"
+                        android:layout_height="72dp"
+                        android:background="#000000"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="#F44336"
+                            android:orientation="horizontal">
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/training_mode_checkmark3"
+                        android:src="@drawable/blue_check"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginTop="36dp"
+                        android:visibility="invisible"/>
+
+                </LinearLayout>
+
+                <!-- mode: small red box -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:alpha="0.38">
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="112dp"
+                        android:layout_height="72dp"
+                        android:background="#000000"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#F44336"
+                            android:orientation="horizontal">
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/training_mode_checkmark4"
+                        android:src="@drawable/blue_check"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginTop="36dp"
+                        android:visibility="invisible"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <!-- row 3 -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="92dp"
+                android:orientation="horizontal">
+
+                <!-- mode: left box -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:alpha="0.38">
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="112dp"
+                        android:layout_height="72dp"
+                        android:background="#000000"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#F44336"
+                            android:orientation="horizontal"
+                            android:layout_marginRight="10dp">
+                        </LinearLayout>
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#616161"
+                            android:orientation="horizontal"
+                            android:layout_marginLeft="10dp"
+                            android:visibility="invisible">
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/training_mode_checkmark5"
+                        android:src="@drawable/blue_check"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginTop="36dp"
+                        android:visibility="invisible"/>
+
+                </LinearLayout>
+
+                <!-- mode: right box -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:alpha="0.38">
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="112dp"
+                        android:layout_height="72dp"
+                        android:background="#000000"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#616161"
+                            android:orientation="horizontal"
+                            android:layout_marginRight="10dp"
+                            android:visibility="invisible">
+                        </LinearLayout>
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#F44336"
+                            android:orientation="horizontal"
+                            android:layout_marginLeft="10dp">
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/training_mode_checkmark6"
+                        android:src="@drawable/blue_check"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginTop="36dp"
+                        android:visibility="invisible"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- row 4 -->
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="92dp"
+                android:orientation="horizontal">
+
+                <!-- mode: 2 box left red -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:alpha="0.38">
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="112dp"
+                        android:layout_height="72dp"
+                        android:background="#000000"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#F44336"
+                            android:orientation="horizontal"
+                            android:layout_marginRight="10dp">
+                        </LinearLayout>
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#616161"
+                            android:orientation="horizontal"
+                            android:layout_marginLeft="10dp">
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/training_mode_checkmark7"
+                        android:src="@drawable/blue_check"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginTop="36dp"
+                        android:visibility="invisible"/>
+
+                </LinearLayout>
+
+                <!-- mode: 2 box right red -->
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:alpha="0.38">
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="112dp"
+                        android:layout_height="72dp"
+                        android:background="#000000"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#616161"
+                            android:orientation="horizontal"
+                            android:layout_marginRight="10dp">
+                        </LinearLayout>
+
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:background="#F44336"
+                            android:orientation="horizontal"
+                            android:layout_marginLeft="10dp">
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/training_mode_checkmark8"
+                        android:src="@drawable/blue_check"
+                        android:layout_marginLeft="-12dp"
+                        android:layout_marginTop="36dp"
+                        android:visibility="invisible"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="80dp"
         android:gravity="bottom">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:background="@color/gray">
+
+            <ImageButton
+                android:id="@+id/training_record"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:onClick="recordClicked"
+                android:background="@color/transparent"
+                android:src="@drawable/ic_videocam_black_24dp"
+                android:alpha="0.54"/>
+
+            <ImageButton
+                android:id="@+id/training_animate"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:onClick="animateClicked"
+                android:background="@color/transparent"
+                android:src="@drawable/ic_rotate_90_degrees_ccw_black_24dp"
+                android:alpha="0.27"/>
+
+            <LinearLayout
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="8dp"
+                android:background="@color/line"></LinearLayout>
+
+            <ImageButton
+                android:id="@+id/training_rewind_all"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:onClick="rewindAllClicked"
+                android:background="@color/transparent"
+                android:src="@drawable/ic_settings_backup_restore_black_24dp"
+                android:alpha="0.27"/>
 
             <Button
-                android:id="@+id/train_conveyor_back"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
+                android:id="@+id/training_dispense"
+                android:layout_width="132dp"
+                android:layout_height="64dp"
                 android:layout_alignParentBottom="true"
-                android:layout_marginRight="4dp"
-                android:layout_weight="1"
-                android:onClick="conveyorBackClicked"
-                android:text="Rewind" />
-
-            <Button
-                android:id="@+id/train_dispense"
-                android:layout_width="0dp"
-                android:layout_height="112dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="4dp"
-                android:layout_weight="1"
                 android:onClick="dispenseClicked"
+                android:background="@color/primary"
+                android:textColor="@color/white"
                 android:text="Dispense (7)" />
 
         </LinearLayout>

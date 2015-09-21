@@ -26,16 +26,20 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent">
 
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent">
-            </TabWidget>
-
             <FrameLayout
-                android:id="@android:id/tabcontent"
+                android:id="@+id/framecontent"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:id="@+id/select_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <include layout="@layout/select_screen" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:orientation="vertical"
