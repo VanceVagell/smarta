@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
@@ -41,6 +42,7 @@ public class TestingActivity extends BaseActivity {
     private SessionData mSessionData = null;
     private Handler mHandler = null;
     private boolean mTrialActive = false;
+    private String mRecordingFileName = "";
 
     public static final String PHASE1 = "phase1";
     public static final String PHASE2 = "phase2";
@@ -51,6 +53,7 @@ public class TestingActivity extends BaseActivity {
 
     public static String TESTING_COLOR_MAP_EXTRA = "testing_color_map";
     public static String TESTING_PHASE_EXTRA = "testing_phase";
+    public static String TESTING_RECORDING_NAME_EXTRA = "testing_recording_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +62,8 @@ public class TestingActivity extends BaseActivity {
 
         String mapJson = getIntent().getStringExtra(TESTING_COLOR_MAP_EXTRA);
         mColorMap = new Gson().fromJson(mapJson, new TypeToken<HashMap<String, RGBColor>>() {}.getType());
-        mPhase = (String) getIntent().getStringExtra(TESTING_PHASE_EXTRA);
+        mPhase = getIntent().getStringExtra(TESTING_PHASE_EXTRA);
+        mRecordingFileName = getIntent().getStringExtra(TESTING_RECORDING_NAME_EXTRA);
 
         // Manually handle touch events anywhere on the screen. Notice that we don't use touch
         // handlers on the 2 testing shapes themselves, see handleTouch() for details.
@@ -71,6 +75,22 @@ public class TestingActivity extends BaseActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Once activity is underway, start the testing.
+        start();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        super.surfaceCreated(surfaceHolder);
+
+        // Once recording preview is created, start recording. Testing should already be started.
+        startRecording(mRecordingFileName + ".mp4");
     }
 
     @Override

@@ -28,6 +28,8 @@ import android.view.View;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import junit.framework.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,12 +106,26 @@ public class BTMessageHandler extends Handler {
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                                 mActivity.startActivity(intent);
                             }
-                        } else if (messageStr.contains("Testing")) {
-                            String mapJson = messageStr.substring("GOTO Testing".length());
+                        } else if (messageStr.contains("Testing1")) {
+                            String recordingName = messageStr.substring("GOTO Testing1 `".length(), messageStr.indexOf("` {"));
+                            String mapJson = messageStr.substring(messageStr.indexOf('{'));
 
                             intent = new Intent(mActivity, TestingActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // Important to not fade colors at all when displaying
                             intent.putExtra(TestingActivity.TESTING_COLOR_MAP_EXTRA, mapJson);
+                            intent.putExtra(TestingActivity.TESTING_PHASE_EXTRA, TestingActivity.PHASE1);
+                            intent.putExtra(TestingActivity.TESTING_RECORDING_NAME_EXTRA, recordingName);
+                            mActivity.startActivity(intent);
+                        } else if (messageStr.contains("Testing2")) {
+                            // TODO extract dupe code with above
+                            String recordingName = messageStr.substring("GOTO Testing2 `".length(), messageStr.indexOf("` {"));
+                            String mapJson = messageStr.substring(messageStr.indexOf('{'));
+
+                            intent = new Intent(mActivity, TestingActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION); // Important to not fade colors at all when displaying
+                            intent.putExtra(TestingActivity.TESTING_COLOR_MAP_EXTRA, mapJson);
+                            intent.putExtra(TestingActivity.TESTING_PHASE_EXTRA, TestingActivity.PHASE2);
+                            intent.putExtra(TestingActivity.TESTING_RECORDING_NAME_EXTRA, recordingName);
                             mActivity.startActivity(intent);
                         }
                     } else if (messageStr.startsWith("CALIBRATE")) {
@@ -131,9 +147,7 @@ public class BTMessageHandler extends Handler {
 
                             if (mActivity.getClass() == TrainingActivity.class) {
                                 ((TrainingActivity) mActivity).startRecording(filename);
-                            } else if (mActivity.getClass() == TestingActivity.class) {
-                                ((TestingActivity) mActivity).startRecording(filename);
-                            }
+                            } // Testing mode starts recording on its own
                         } else if (messageStr.contains("Stop")) {
                             if (mActivity.getClass() == TrainingActivity.class) {
                                 ((TrainingActivity) mActivity).stopRecording();
@@ -171,12 +185,8 @@ public class BTMessageHandler extends Handler {
                     } else if (messageStr.startsWith("ABORTTESTING")) {
                         if (mActivity.getClass() == TestingActivity.class) {
                             ((TestingActivity) mActivity).abort();
-                        }
-                    } else if (messageStr.startsWith("STARTSESSION")) {
-                        String phase = messageStr.contains("phase1") ? TestingActivity.PHASE1 : TestingActivity.PHASE2;
-                        if (mActivity.getClass() == TestingActivity.class) {
-                            ((TestingActivity) mActivity).mPhase = phase;
-                            ((TestingActivity) mActivity).start();
+                        } else {
+                            Log.d("LOG", "WARNING: Trying to abort testing, not in testing mode.");
                         }
                     }
                     break;

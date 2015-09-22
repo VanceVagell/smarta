@@ -99,9 +99,11 @@ public class RenderedTimer {
     }
 
     public void stop() {
-        mTimer.cancel();
-        mTimer.purge();
-        mTimer = null;
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+            mTimer = null;
+        }
         mStartTime = null;
         mTextView.setText("00:00");
     }

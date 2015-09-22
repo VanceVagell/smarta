@@ -123,6 +123,7 @@ public class MainActivity extends Activity {
     private String mOAuthToken = null;
     private BTMessageHandler mBtMessageHandler = null;
     private Date mSessionStartTime = null;
+    private BroadcastReceiver mBtReceiver = null;
 
     private static final String SHEETS_SCOPE = "oauth2:https://spreadsheets.google.com/feeds";
 
@@ -155,7 +156,7 @@ public class MainActivity extends Activity {
 
         // Restart Bluetooth to workaround bug where an old Bluetooth socket won't connect.
         if (mBluetoothAdapter.isEnabled()) {
-            BroadcastReceiver btReceiver = new BroadcastReceiver() {
+            mBtReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     final String action = intent.getAction();
@@ -176,7 +177,7 @@ public class MainActivity extends Activity {
                 }
             };
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-            registerReceiver(btReceiver, filter);
+            registerReceiver(mBtReceiver, filter);
             mBluetoothAdapter.disable();
         } else {
             mBluetoothAdapter.enable();
@@ -677,19 +678,36 @@ public class MainActivity extends Activity {
             findViewById(previousTimerId).setVisibility(View.INVISIBLE);
         }
         findViewById(timerId).setVisibility(View.VISIBLE);
+        if (mTestingTimer != null) {
+            mTestingTimer.stop();
+        }
         mTestingTimer = new RenderedTimer(this, (TextView) findViewById(timerId));
         if (previousRowId != NO_ID) {
             findViewById(previousRowId).setBackgroundColor(getResources().getColor(R.color.transparent));
         }
-        findViewById(rowId).setBackgroundColor(getResources().getColor(R.color.light_gray));
+        findViewById(rowId).setBackgroundColor(getResources().getColor(R.color.accent));
         ((TextView) findViewById(labelId)).setTextColor(getResources().getColor(R.color.dark_text));
         findViewById(iconId).setAlpha(0.87f);
+    }
+
+    private void displayResults(Boolean timedOut, Boolean choseCorrectly, Integer iconId) {
+        if (timedOut) {
+            ((ImageView) findViewById(iconId)).setImageResource(R.drawable.ic_timer_black_24dp);
+        } else {
+            if (choseCorrectly) {
+                setDispenseRemaining(mDispenseRemaining - 1);
+                ((ImageView) findViewById(iconId)).setImageResource(R.drawable.ic_check_black_24dp);
+            } else {
+                ((ImageView) findViewById(iconId)).setImageResource(R.drawable.ic_close_black_24dp);
+            }
+        }
     }
 
     private synchronized void handleTrialData(TrialData trialData) {
         mTrialCount++;
 
         if (mTrialCount > NUM_TRIALS_PER_SESSION) {
+            displayResults(trialData.timedOut, trialData.subjectChoseCorrectly, R.id.test_trial_icon7);
             setTestingStarted(false);
         } else {
             // TODO setup a data binding instead of manually twiddling all of these UI settings.
@@ -698,22 +716,28 @@ public class MainActivity extends Activity {
                     highlightTestingRow(NO_ID, NO_ID, R.id.trial_timer1, R.id.test_trial_row1, R.id.test_trial_label1, R.id.test_trial_icon1);
                     break;
                 case 2:
-                    highlightTestingRow(R.id.trial_timer1, R.id.trial_timer1, R.id.trial_timer2, R.id.test_trial_row2, R.id.test_trial_label2, R.id.test_trial_icon2);
+                    displayResults(trialData.timedOut, trialData.subjectChoseCorrectly, R.id.test_trial_icon1);
+                    highlightTestingRow(R.id.trial_timer1, R.id.test_trial_row1, R.id.trial_timer2, R.id.test_trial_row2, R.id.test_trial_label2, R.id.test_trial_icon2);
                     break;
                 case 3:
-                    highlightTestingRow(R.id.trial_timer2, R.id.trial_timer2, R.id.trial_timer3, R.id.test_trial_row3, R.id.test_trial_label3, R.id.test_trial_icon3);
+                    displayResults(trialData.timedOut, trialData.subjectChoseCorrectly, R.id.test_trial_icon2);
+                    highlightTestingRow(R.id.trial_timer2, R.id.test_trial_row2, R.id.trial_timer3, R.id.test_trial_row3, R.id.test_trial_label3, R.id.test_trial_icon3);
                     break;
                 case 4:
-                    highlightTestingRow(R.id.trial_timer3, R.id.trial_timer3, R.id.trial_timer4, R.id.test_trial_row4, R.id.test_trial_label4, R.id.test_trial_icon4);
+                    displayResults(trialData.timedOut, trialData.subjectChoseCorrectly, R.id.test_trial_icon3);
+                    highlightTestingRow(R.id.trial_timer3, R.id.test_trial_row3, R.id.trial_timer4, R.id.test_trial_row4, R.id.test_trial_label4, R.id.test_trial_icon4);
                     break;
                 case 5:
-                    highlightTestingRow(R.id.trial_timer4, R.id.trial_timer4, R.id.trial_timer5, R.id.test_trial_row5, R.id.test_trial_label5, R.id.test_trial_icon5);
+                    displayResults(trialData.timedOut, trialData.subjectChoseCorrectly, R.id.test_trial_icon4);
+                    highlightTestingRow(R.id.trial_timer4, R.id.test_trial_row4, R.id.trial_timer5, R.id.test_trial_row5, R.id.test_trial_label5, R.id.test_trial_icon5);
                     break;
                 case 6:
-                    highlightTestingRow(R.id.trial_timer5, R.id.trial_timer5, R.id.trial_timer6, R.id.test_trial_row6, R.id.test_trial_label6, R.id.test_trial_icon6);
+                    displayResults(trialData.timedOut, trialData.subjectChoseCorrectly, R.id.test_trial_icon5);
+                    highlightTestingRow(R.id.trial_timer5, R.id.test_trial_row5, R.id.trial_timer6, R.id.test_trial_row6, R.id.test_trial_label6, R.id.test_trial_icon6);
                     break;
                 case 7:
-                    highlightTestingRow(R.id.trial_timer6, R.id.trial_timer6, R.id.trial_timer7, R.id.test_trial_row7, R.id.test_trial_label7, R.id.test_trial_icon7);
+                    displayResults(trialData.timedOut, trialData.subjectChoseCorrectly, R.id.test_trial_icon6);
+                    highlightTestingRow(R.id.trial_timer6, R.id.test_trial_row6, R.id.trial_timer7, R.id.test_trial_row7, R.id.test_trial_label7, R.id.test_trial_icon7);
                     break;
                 default:
                     Log.d("LOG", "Unexpected trial count: " + mTrialCount);
@@ -723,17 +747,8 @@ public class MainActivity extends Activity {
             mTestingTimer.startCountDown(35);
         }
 
-        if (trialData.timedOut) {
-            Toast.makeText(this, "Trial out of time", Toast.LENGTH_LONG).show();
-        } else {
-            if (trialData.subjectChoseCorrectly) {
-                setDispenseRemaining(mDispenseRemaining - 1);
-            }
-            Toast.makeText(this, trialData.subjectChoseCorrectly ? "Correct choice" : "Incorrect choice", Toast.LENGTH_LONG).show();
-        }
-
         Log.d("LOG", "Saving trial data.");
-        new TrialDataSaverThread(this, mSelectedSubject, mSelectedTestingPhase, trialData, mOAuthToken, mSessionStartTime).start();
+        new TrialDataSaverThread(this, mSelectedSubject, mSelectedTestingPhase, trialData, mOAuthToken, (Date) mSessionStartTime.clone()).start();
     }
 
     private synchronized void sendBtMessage(String message) {
@@ -753,6 +768,7 @@ public class MainActivity extends Activity {
         super.onDestroy();
         try {
             ((LemurColorRemoteApplication) getApplication()).getBtSocket().close();
+            unregisterReceiver(mBtReceiver);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1015,15 +1031,21 @@ public class MainActivity extends Activity {
     private void setTestingStarted(boolean started) {
         mTestingStarted = started;
         if (started) {
-            sendBtMessage("GOTO Testing " + new Gson().toJson(mColorMap));
+            // Reset all trial rows
+            // TODO use a data binding instead, so don't need to twiddle all these UI settings
+            resetTestingRow(R.id.trial_timer1, R.id.test_trial_row1, R.id.test_trial_label1, R.id.test_trial_icon1);
+            resetTestingRow(R.id.trial_timer2, R.id.test_trial_row2, R.id.test_trial_label2, R.id.test_trial_icon2);
+            resetTestingRow(R.id.trial_timer3, R.id.test_trial_row3, R.id.test_trial_label3, R.id.test_trial_icon3);
+            resetTestingRow(R.id.trial_timer4, R.id.test_trial_row4, R.id.test_trial_label4, R.id.test_trial_icon4);
+            resetTestingRow(R.id.trial_timer5, R.id.test_trial_row5, R.id.test_trial_label5, R.id.test_trial_icon5);
+            resetTestingRow(R.id.trial_timer6, R.id.test_trial_row6, R.id.test_trial_label6, R.id.test_trial_icon6);
+            resetTestingRow(R.id.trial_timer7, R.id.test_trial_row7, R.id.test_trial_label7, R.id.test_trial_icon7);
+
+            // Prepare to start
+            String videoName = getCurrentTimeString() + " - TESTING - " + mSelectedSubject;
+            sendBtMessage("GOTO Testing" + (mSelectedTestingPhase.equals(PHASE_1) ? 1 : 2) + " `" + videoName + "` " + new Gson().toJson(mColorMap));
             mSessionStartTime = new Date();
-
             mTrialCount = 1;
-
-            // Start session and recording video
-            String phase = mSelectedTestingPhase.equals(PHASE_1) ? "phase1" : "phase2";
-            sendBtMessage("STARTSESSION " + phase);
-            sendBtMessage("RECORD Start " + getCurrentTimeString() + " - TESTING - " + mSelectedSubject);
             highlightTestingRow(NO_ID, NO_ID, R.id.trial_timer1, R.id.test_trial_row1, R.id.test_trial_label1, R.id.test_trial_icon1);
             mTestingTimer.startCountDown(30);
         } else {
@@ -1034,22 +1056,12 @@ public class MainActivity extends Activity {
             sendBtMessage("ABORTTESTING");
 
             mTestingTimer.stop();
-
-            // Reset all trial rows
-            // TODO use a data binding instead, so don't need to twiddle all these UI settings
-            resetTestingRow(R.id.trial_timer1, R.id.test_trial_row1, R.id.test_trial_label1, R.id.test_trial_icon1);
-            resetTestingRow(R.id.trial_timer2, R.id.test_trial_row2, R.id.test_trial_label2, R.id.test_trial_icon2);
-            resetTestingRow(R.id.trial_timer3, R.id.test_trial_row3, R.id.test_trial_label3, R.id.test_trial_icon3);
-            resetTestingRow(R.id.trial_timer4, R.id.test_trial_row4, R.id.test_trial_label4, R.id.test_trial_icon4);
-            resetTestingRow(R.id.trial_timer5, R.id.test_trial_row5, R.id.test_trial_label5, R.id.test_trial_icon5);
-            resetTestingRow(R.id.trial_timer6, R.id.test_trial_row6, R.id.test_trial_label6, R.id.test_trial_icon6);
-            resetTestingRow(R.id.trial_timer7, R.id.test_trial_row7, R.id.test_trial_label7, R.id.test_trial_icon7);
         }
     }
 
     private void resetTestingRow(int timerId, int rowId, int labelId, int iconId) {
         findViewById(timerId).setVisibility(View.GONE);
-        findViewById(rowId).setBackgroundColor(getResources().getColor(R.color.light_gray));
+        findViewById(rowId).setBackgroundColor(getResources().getColor(R.color.white));
         ((TextView) findViewById(labelId)).setTextColor(getResources().getColor(R.color.light_gray));
         findViewById(iconId).setAlpha(0.54f);
         ((ImageView) findViewById(iconId)).setImageResource(R.drawable.ic_help_black_24dp);
