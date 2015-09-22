@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
 
     private String mSelectedSubject = "";
     private String mSelectedTestingPhase = PHASE_1;
-    private String mSelectedTrainingMode = "";
+    private String mSelectedTrainingMode = "Blank";
     private String mOAuthToken = null;
     private BTMessageHandler mBtMessageHandler = null;
     private Date mSessionStartTime = null;
@@ -221,12 +221,37 @@ public class MainActivity extends Activity {
             case R.id.action_reset_dispense_count:
                 setDispenseRemaining(FULL_DISPENSE_COUNT);
                 return true;
+            case R.id.action_force_dispense1:
+                sendBtMessage("DISPENSE");
+                return true;
+            case R.id.action_force_rewind1:
+                sendBtMessage("CONVEYORBACK");
+                return true;
             case R.id.action_pick_spreadsheet:
                 pickSpreadsheet();
+                return true;
+            case android.R.id.home:
+                handleBack();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        handleBack();
+    }
+
+    private void handleBack() {
+        rewindAll();
+        if (mCurrentScreen == SCREEN_TRAIN) {
+            setTrainingStarted(false);
+        } else if (mCurrentScreen == SCREEN_TEST) {
+            setTestingStarted(false);
+        }
+
+        gotoScreen(SCREEN_SELECT);
     }
 
     // TODO extract into a calibration activity. complex because BT stack needs updating to work across activities.
@@ -253,13 +278,15 @@ public class MainActivity extends Activity {
 
         switch (screen) {
             case SCREEN_SELECT:
+                getActionBar().setDisplayHomeAsUpEnabled(false);
                 setTitle(R.string.app_name);
                 break;
             case SCREEN_TRAIN:
+                getActionBar().setDisplayHomeAsUpEnabled(true);
                 setTitle("Training " + mSelectedSubject);
-                // TODOV hide overflow
                 break;
             case SCREEN_TEST:
+                getActionBar().setDisplayHomeAsUpEnabled(true);
                 setTitle("Testing " + mSelectedSubject);
                 ((TextView) findViewById(R.id.test_phase_label)).setText(mSelectedTestingPhase);
                 break;
@@ -546,11 +573,22 @@ public class MainActivity extends Activity {
 
     private void setupSelectScreen() {
         // Populate the list of subject names
+        final ListView listView = ((ListView) findViewById(R.id.subject_names));
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                 this,
-                android.R.layout.simple_list_item_1,
+                android.R.layout.simple_list_item_activated_1,
                 getResources().getStringArray(R.array.subjects_array));
-        ((ListView) findViewById(R.id.subject_names)).setAdapter(arrayAdapter);
+        listView.setAdapter(arrayAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mSelectedSubject = (String)(listView.getItemAtPosition(position));
+            }
+        });
+
+        // Select first item by default
+        listView.setItemChecked(0, true);
+        listView.performItemClick(listView.getSelectedView(), 0, 0);
     }
 
     @Override
@@ -1039,6 +1077,7 @@ public class MainActivity extends Activity {
             boolean modeSupportsAnimation = !(mSelectedTrainingMode.equals("Blank") || mSelectedTrainingMode.equals("All red") );
             ImageButton animButton = (ImageButton) findViewById(R.id.training_animate);
             animButton.setEnabled(modeSupportsAnimation);
+            animButton.setAlpha(modeSupportsAnimation ? 0.54f : 0.27f);
 
             // TODO extract all these sendBtMessage calls to a model object that syncs via BT
             sendBtMessage("GOTO TrainingOn \"" + mSelectedTrainingMode + "\" " + new Gson().toJson(mColorMap));
@@ -1047,8 +1086,11 @@ public class MainActivity extends Activity {
         }
     }
 
+    private boolean mTrainingObjectAnimated = false;
+
     private void setTrainingObjectAnimated(boolean animated) {
         // Make sure switch matches this state.
+        mTrainingObjectAnimated = animated;
         ImageButton animButton = (ImageButton) findViewById(R.id.training_animate);
         animButton.setBackgroundColor(animated ? getResources().getColor(R.color.dark_gray) : getResources().getColor(R.color.transparent));
 
@@ -1079,6 +1121,18 @@ public class MainActivity extends Activity {
         new TrainingDataSaverThread(this, mSelectedSubject, mTrainingTimer.getStartTimeString(), mTrainingTimer.getElapsedTimeString(), mOAuthToken).start();
     }
 
+    /**
+     * Rewind as many spaces as there have been dispenses.
+     */
+    private void rewindAll() {
+        ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(DISPENSE_VIBRATE_MS);
+        int neededRewinds = FULL_DISPENSE_COUNT - mDispenseRemaining;
+        for (int i = 0; i < neededRewinds; i++) {
+            sendBtMessage("CONVEYORBACK");
+        }
+        setDispenseRemaining(FULL_DISPENSE_COUNT);
+    }
+
     private SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss zzz");
 
     private String getCurrentTimeString() {
@@ -1096,6 +1150,9 @@ public class MainActivity extends Activity {
     private static final int DISPENSE_VIBRATE_MS = 500;
 
     public void dispenseClicked(View v) {
+        if (mDispenseRemaining == 0) {
+            return;
+        }
         sendBtMessage("DISPENSE");
         ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(DISPENSE_VIBRATE_MS);
         setDispenseRemaining(mDispenseRemaining - 1);
@@ -1110,24 +1167,28 @@ public class MainActivity extends Activity {
             mDispenseRemaining = dispenseRemaining;
         }
         ((Button) findViewById(R.id.train_dispense)).setText("Dispense (" + mDispenseRemaining + ")");
+
+        if (mTrainingStarted) {
+            ImageButton rewindButton = (ImageButton) findViewById(R.id.training_rewind_all);
+            rewindButton.setEnabled(mDispenseRemaining < FULL_DISPENSE_COUNT);
+            rewindButton.setAlpha(mDispenseRemaining < FULL_DISPENSE_COUNT ? 0.54f : 0.27f);
+        }
     }
 
     public void startTest1Clicked(View v) {
         mSelectedTestingPhase = PHASE_1;
-        mSelectedSubject = ((ListView) findViewById(R.id.subject_names)).getSelectedItem().toString();
         gotoScreen(SCREEN_TEST);
         setTestingStarted(true);
     }
 
     public void startTest2Clicked(View v) {
         mSelectedTestingPhase = PHASE_2;
-        mSelectedSubject = ((ListView) findViewById(R.id.subject_names)).getSelectedItem().toString();
         gotoScreen(SCREEN_TEST);
         setTestingStarted(true);
     }
 
     public void startTrainingClicked(View v) {
-        mSelectedSubject = ((ListView) findViewById(R.id.subject_names)).getSelectedItem().toString();
+        selectTrainingMode("Blank");
         gotoScreen(SCREEN_TRAIN);
         setTrainingStarted(true);
     }
@@ -1138,6 +1199,109 @@ public class MainActivity extends Activity {
         } else {
             startRecordingTrainingVideo();
         }
+    }
+
+    public void trainAnimateClicked(View v) {
+        setTrainingObjectAnimated(!mTrainingObjectAnimated);
+    }
+
+    public void trainRewindAllClicked(View v) {
+        rewindAll();
+    }
+
+
+    private void selectTrainingMode(String modeName) {
+        // disable old tile
+        updateTrainingModeTile(false, getTrainingTileViewId(), getTrainingTileIconId());
+
+        // select new tile
+        mSelectedTrainingMode = modeName;
+
+        // enable new tile
+        updateTrainingModeTile(true, getTrainingTileViewId(), getTrainingTileIconId());
+
+        // update rest of training UI
+        updateTrainingDisplay(true);
+    }
+
+    private int getTrainingTileViewId() {
+        if (mSelectedTrainingMode.equals("Blank")) {
+            return R.id.training_mode1;
+        } else if (mSelectedTrainingMode.equals("All red")) {
+            return R.id.training_mode2;
+        } else if (mSelectedTrainingMode.equals("Large red box")) {
+            return R.id.training_mode3;
+        } else if (mSelectedTrainingMode.equals("Small red box")) {
+            return R.id.training_mode4;
+        } else if (mSelectedTrainingMode.equals("Red left")) {
+            return R.id.training_mode5;
+        } else if (mSelectedTrainingMode.equals("Red right")) {
+            return R.id.training_mode6;
+        } else if (mSelectedTrainingMode.equals("Red left gray right")) {
+            return R.id.training_mode7;
+        } else if (mSelectedTrainingMode.equals("Gray left red right")) {
+            return R.id.training_mode8;
+        }
+        return -1;
+    }
+
+    private int getTrainingTileIconId() {
+        if (mSelectedTrainingMode.equals("Blank")) {
+            return R.id.training_mode_checkmark1;
+        } else if (mSelectedTrainingMode.equals("All red")) {
+            return R.id.training_mode_checkmark2;
+        } else if (mSelectedTrainingMode.equals("Large red box")) {
+            return R.id.training_mode_checkmark3;
+        } else if (mSelectedTrainingMode.equals("Small red box")) {
+            return R.id.training_mode_checkmark4;
+        } else if (mSelectedTrainingMode.equals("Red left")) {
+            return R.id.training_mode_checkmark5;
+        } else if (mSelectedTrainingMode.equals("Red right")) {
+            return R.id.training_mode_checkmark6;
+        } else if (mSelectedTrainingMode.equals("Red left gray right")) {
+            return R.id.training_mode_checkmark7;
+        } else if (mSelectedTrainingMode.equals("Gray left red right")) {
+            return R.id.training_mode_checkmark8;
+        }
+        return -1;
+    }
+
+    private void updateTrainingModeTile(boolean selected, int modeViewId, int modeIconId) {
+        findViewById(modeViewId).setAlpha(selected ? 1.0f: 0.38f);
+        findViewById(modeIconId).setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    // TODO extract strings into constants (even better if shared with tablet app)
+    public void trainingMode1Selected(View v) {
+        selectTrainingMode("Blank");
+    }
+
+    public void trainingMode2Selected(View v) {
+        selectTrainingMode("All red");
+    }
+
+    public void trainingMode3Selected(View v) {
+        selectTrainingMode("Large red box");
+    }
+
+    public void trainingMode4Selected(View v) {
+        selectTrainingMode("Small red box");
+    }
+
+    public void trainingMode5Selected(View v) {
+        selectTrainingMode("Red left");
+    }
+
+    public void trainingMode6Selected(View v) {
+        selectTrainingMode("Red right");
+    }
+
+    public void trainingMode7Selected(View v) {
+        selectTrainingMode("Red left gray right");
+    }
+
+    public void trainingMode8Selected(View v) {
+        selectTrainingMode("Gray left red right");
     }
 
     public void conveyorBackClicked(View v) {

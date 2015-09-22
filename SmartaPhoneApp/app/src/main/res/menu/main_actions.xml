@@ -12,8 +12,14 @@
             app:showAsAction="never"/>
     </group>
     <group>
+        <item android:id="@+id/action_force_dispense1"
+            android:title="Force dispense 1"
+            app:showAsAction="never"/>
+        <item android:id="@+id/action_force_rewind1"
+            android:title="Force rewind 1"
+            app:showAsAction="never"/>
         <item android:id="@+id/action_reset_dispense_count"
-            android:title="Reset food count"
+            android:title="Force reset count"
             app:showAsAction="never"/>
     </group>
 </menu>

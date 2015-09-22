@@ -50,7 +50,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:id="@+id/training_mode1"
+                    android:onClick="trainingMode1Selected">
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="112dp"
@@ -77,7 +79,9 @@
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:alpha="0.38">
+                    android:alpha="0.38"
+                    android:id="@+id/training_mode2"
+                    android:onClick="trainingMode2Selected">
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="112dp"
@@ -112,7 +116,9 @@
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:alpha="0.38">
+                    android:alpha="0.38"
+                    android:id="@+id/training_mode3"
+                    android:onClick="trainingMode3Selected">
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="112dp"
@@ -148,7 +154,9 @@
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:alpha="0.38">
+                    android:alpha="0.38"
+                    android:id="@+id/training_mode4"
+                    android:onClick="trainingMode4Selected">
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="112dp"
@@ -192,7 +200,9 @@
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:alpha="0.38">
+                    android:alpha="0.38"
+                    android:id="@+id/training_mode5"
+                    android:onClick="trainingMode5Selected">
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="112dp"
@@ -238,7 +248,9 @@
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:alpha="0.38">
+                    android:alpha="0.38"
+                    android:id="@+id/training_mode6"
+                    android:onClick="trainingMode6Selected">
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="112dp"
@@ -292,7 +304,9 @@
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:alpha="0.38">
+                    android:alpha="0.38"
+                    android:id="@+id/training_mode7"
+                    android:onClick="trainingMode7Selected">
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="112dp"
@@ -337,7 +351,9 @@
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:alpha="0.38">
+                    android:alpha="0.38"
+                    android:id="@+id/training_mode8"
+                    android:onClick="trainingMode8Selected">
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:layout_width="112dp"
