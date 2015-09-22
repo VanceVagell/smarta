@@ -19,6 +19,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gdata.client.spreadsheet.*;
 import com.google.gdata.data.spreadsheet.*;
@@ -160,17 +161,7 @@ public class TrialDataSaverThread extends Thread {
             mActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(mActivity)
-                            .setTitle("Can't save online")
-                            .setMessage("Check internet connection then restart app. Data saved to text file.")
-                            .setCancelable(false)
-                            .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // Do nothing.
-                                }
-                            })
-                            .show();
+                    Toast.makeText(mActivity, "Can't save online", Toast.LENGTH_LONG).show();
                 }
             });
         }
