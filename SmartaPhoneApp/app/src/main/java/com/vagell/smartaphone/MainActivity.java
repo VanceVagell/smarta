@@ -805,6 +805,10 @@ public class MainActivity extends Activity {
                     int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                     cursor.moveToFirst();
                     String fileName = cursor.getString(nameIndex);
+
+                    // TODO figure out why file picker is appending ".pdf" (started late May 2016)
+                    fileName = fileName.replace(".pdf", "");
+
                     Log.d("LOG", "Data spreadsheet name: " + fileName);
                     setSpreadsheetName(fileName);
                     saveSpreadsheetName();
