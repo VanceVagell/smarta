@@ -6,6 +6,8 @@
     <string-array name="subjects_array">
         <item>Amor Jr.</item>
         <item>Antlia</item>
+        <item>Archie</item>
+        <item>Astro</item>
         <item>Avior</item>
         <item>Borealis</item>
         <item>Carina</item>
@@ -13,6 +15,7 @@
         <item>Celeste</item>
         <item>Comet</item>
         <item>Cordelia</item>
+        <item>Cosmo</item>
         <item>Eros JR</item>
         <item>Galaxy</item>
         <item>Grace</item>
@@ -22,6 +25,7 @@
         <item>Hunter</item>
         <item>Josephine</item>
         <item>Junior</item>
+        <item>Kalani</item>
         <item>Kizzy</item>
         <item>Krok</item>
         <item>Magellan</item>
@@ -32,6 +36,7 @@
         <item>Pyxis II</item>
         <item>Ravo</item>
         <item>Rees</item>
+        <item>Sally</item>
         <item>Titan</item>
         <item>Subject 1</item>
         <item>Subject 2</item>
