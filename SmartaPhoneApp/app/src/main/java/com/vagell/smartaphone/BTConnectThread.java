@@ -15,11 +15,9 @@
 package com.vagell.smartaphone;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.DialogInterface;
 import android.os.Handler;
 import android.util.Log;
 
@@ -109,9 +107,7 @@ public class BTConnectThread extends Thread {
                 // Unable to connect; close the socket and get out
                 try {
                     mSocket.close();
-                }
-
-                catch(IOException closeException) {
+                } catch(IOException closeException) {
                     closeException.printStackTrace();
                 }
 

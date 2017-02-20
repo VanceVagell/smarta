@@ -161,17 +161,19 @@ public class MainActivity extends Activity {
                 public void onReceive(Context context, Intent intent) {
                     final String action = intent.getAction();
 
-                    if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                        final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
-                        switch (state) {
-                            case BluetoothAdapter.STATE_OFF:
-                                Log.d("LOG", "BT disabled, enabling.");
-                                mBluetoothAdapter.enable();
-                                break;
-                            case BluetoothAdapter.STATE_ON:
-                                Log.d("LOG", "BT enabled, attempting to connect.");
-                                resetBtConnection();
-                                break;
+                    synchronized(this) {
+                        if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                            final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                            switch (state) {
+                                case BluetoothAdapter.STATE_OFF:
+                                    Log.d("LOG", "BT disabled, enabling.");
+                                    mBluetoothAdapter.enable();
+                                    break;
+                                case BluetoothAdapter.STATE_ON:
+                                    Log.d("LOG", "BT enabled, attempting to connect.");
+                                    resetBtConnection();
+                                    break;
+                            }
                         }
                     }
                 }
@@ -596,9 +598,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        // TODO is this still needed? Was causes too many calls due to async BT enablement callback
-        // (when app first starts). Test if app can recover from tabbing between apps without this.
-        // resetBtConnection();
+        resetBtConnection();
     }
 
     private synchronized void resetBtConnection() {
@@ -607,7 +607,6 @@ public class MainActivity extends Activity {
         if (socket == null || !socket.isConnected()) {
             if (mBtConnectThread != null) {
                 mBtConnectThread.cancel();
-                mBtConnectThread = null;
             }
             Thread btCommThread = ((LemurColorRemoteApplication) getApplication()).getBtCommThread();
             if (btCommThread != null) {
