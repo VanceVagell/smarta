@@ -168,7 +168,7 @@ public class MainActivity extends Activity {
                                 Log.d("LOG", "BT disabled, enabling.");
                                 mBluetoothAdapter.enable();
                                 break;
-                            default:
+                            case BluetoothAdapter.STATE_ON:
                                 Log.d("LOG", "BT enabled, attempting to connect.");
                                 resetBtConnection();
                                 break;
@@ -596,15 +596,18 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        resetBtConnection();
+        // TODO is this still needed? Was causes too many calls due to async BT enablement callback
+        // (when app first starts). Test if app can recover from tabbing between apps without this.
+        // resetBtConnection();
     }
 
-    private void resetBtConnection() {
+    private synchronized void resetBtConnection() {
         // Reset any old connections.
         BluetoothSocket socket = ((LemurColorRemoteApplication) getApplication()).getBtSocket();
         if (socket == null || !socket.isConnected()) {
             if (mBtConnectThread != null) {
                 mBtConnectThread.cancel();
+                mBtConnectThread = null;
             }
             Thread btCommThread = ((LemurColorRemoteApplication) getApplication()).getBtCommThread();
             if (btCommThread != null) {
@@ -827,7 +830,6 @@ public class MainActivity extends Activity {
 
     private void pickSpreadsheet() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
         startActivityForResult(intent, PICK_SPREADSHEET_CALLBACK);
     }
@@ -1066,7 +1068,7 @@ public class MainActivity extends Activity {
     private void resetTestingRow(int timerId, int rowId, int labelId, int iconId) {
         findViewById(timerId).setVisibility(View.GONE);
         findViewById(rowId).setBackgroundColor(getResources().getColor(R.color.white));
-        ((TextView) findViewById(labelId)).setTextColor(getResources().getColor(R.color.light_gray));
+        ((TextView) findViewById(labelId)).setTextColor(getResources().getColor(R.color.light_text));
         findViewById(iconId).setAlpha(0.54f);
         ((ImageView) findViewById(iconId)).setImageResource(R.drawable.ic_help_black_24dp);
     }

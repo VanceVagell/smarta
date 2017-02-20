@@ -8,24 +8,6 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/gray"
-        android:paddingLeft="16dp">
-
-        <TextView
-            android:id="@+id/test_phase_label"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textColor="@color/light_text"
-            android:textSize="14sp"
-            android:text="Phase 1"
-            android:textStyle="bold"
-            android:gravity="center_vertical"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_marginTop="8dp">
@@ -297,4 +279,23 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/gray"
+        android:paddingLeft="16dp">
+
+        <TextView
+            android:id="@+id/test_phase_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/light_text"
+            android:textSize="14sp"
+            android:text="Phase 1"
+            android:textStyle="bold"
+            android:gravity="center_vertical"/>
+
+    </LinearLayout>
+
 </LinearLayout>

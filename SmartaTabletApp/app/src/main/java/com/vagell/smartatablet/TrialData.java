@@ -16,6 +16,9 @@ package com.vagell.smartatablet;
 
 import java.util.Date;
 
+/**
+ * MUST be kept in sync with matching Java file in phone app. Used for serialization.
+ */
 public class TrialData {
     public int count = -1, duration = -1;
     RGBColor leftColor = null, rightColor = null;
@@ -31,6 +34,6 @@ public class TrialData {
     }
 
     public void setEndTime() {
-        duration = (int) ((new Date().getTime() - startTime.getTime()) / 1000);
+        duration = (int) ((new Date().getTime() - startTime.getTime()));
     }
 }

@@ -136,7 +136,7 @@ public class TestingActivity extends BaseActivity {
         mTrialTimeoutRunnable = new Runnable() {
             public void run() {
                 trialData.timedOut = true;
-                trialData.duration = SEC_PER_TRIAL;
+                trialData.duration = SEC_PER_TRIAL * 1000;
                 sendTrialData();
                 if (mTrialCount < TRIALS_PER_SESSION - 1) {
                     waitBetweenTrials();
