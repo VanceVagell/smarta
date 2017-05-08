@@ -1,2 +1,2 @@
-SMARTA source code and other assets created and copyrighted by Vance Vagell, 2014-2015.
-SMARTA animal behavior experimental design by Raymond Vagell, 2014-2015.
+SMARTA source code and other assets created and copyrighted by Vance Vagell, 2014-2017.
+SMARTA animal behavior experimental design by Raymond Vagell, 2014-2017.
