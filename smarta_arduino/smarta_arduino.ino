@@ -12,8 +12,15 @@
         See the License for the specific language governing permissions and
         limitations under the License.*/
 
+// This version of the program is for use ONLY with the Make Motor Shield v1.1.
+
 #include <Make_DCMotor.h>
 #include <SoftwareSerial.h>
+
+// Adjust these delay values to run the motor longer/shorter depending on the characteristics of your
+// SMARTA's conveyor belt, cups, and motor.
+#define DISPENSE_DURATION 920
+#define REWIND_DURATION 1100
 
 // IMPORTANT! Replaced motors 2 and 3 (m2 and m3) with serial connection to tablet.
 SoftwareSerial tabletSerial(9, 5); // RX, TX
@@ -41,8 +48,8 @@ void loop(void) {
       Serial.println(F("Received start signal, running motor briefly"));
       digitalWrite(DEBUG_LED, HIGH);
       motor1.setDirection(DIR_CW);
-      motor1.setSpeed(100); // You can tweak all the timing values in here for your particular setup.
-      delay(1050);
+      motor1.setSpeed(100);
+      delay(DISPENSE_DURATION);
       digitalWrite(DEBUG_LED, LOW);
       motor1.setSpeed(0);
     } else if (in == '2') {
@@ -50,7 +57,7 @@ void loop(void) {
       digitalWrite(DEBUG_LED, HIGH);
       motor1.setDirection(DIR_CCW);
       motor1.setSpeed(100);
-      delay(950);
+      delay(REWIND_DURATION);
       digitalWrite(DEBUG_LED, LOW);
       motor1.setSpeed(0);
     } else if (in == '3') {
@@ -58,7 +65,7 @@ void loop(void) {
       digitalWrite(DEBUG_LED, HIGH);
       motor1.setDirection(DIR_CCW);
       motor1.setSpeed(100);
-      delay(6700);
+      delay(REWIND_DURATION * 7);
       digitalWrite(DEBUG_LED, LOW);
       motor1.setSpeed(0);
     }

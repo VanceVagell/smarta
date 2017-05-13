@@ -12,10 +12,16 @@
         See the License for the specific language governing permissions and
         limitations under the License.*/
 
+// This version of the program is for use ONLY with the Adafruit Motor Shield v2.
+
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include <SoftwareSerial.h>
 
+// Adjust these delay values to run the motor longer/shorter depending on the characteristics of your
+// SMARTA's conveyor belt, cups, and motor.
+#define DISPENSE_DURATION 600
+#define REWIND_DURATION 650
 
 SoftwareSerial tabletSerial(9, 5); // RX, TX
 
@@ -44,21 +50,21 @@ void loop(void) {
       Serial.println(F("Received start signal, running motor briefly"));
       digitalWrite(DEBUG_LED, HIGH);
       motor1->run(FORWARD);
-      delay(1050); // Adjust these delay values to run the motor longer/shorter depending your particular SMARTA's needs.
+      delay(DISPENSE_DURATION);
       digitalWrite(DEBUG_LED, LOW);
       motor1->run(RELEASE);
     } else if (in == '2') {
       Serial.println(F("Received back signal, running motor briefly in reverse"));
       digitalWrite(DEBUG_LED, HIGH);
-      motor1->run(FORWARD);
-      delay(950);
+      motor1->run(BACKWARD);
+      delay(REWIND_DURATION);
       digitalWrite(DEBUG_LED, LOW);
       motor1->run(RELEASE);
     } else if (in == '3') {
       Serial.println(F("Received far back signal, running motor for a while in reverse"));
       digitalWrite(DEBUG_LED, HIGH);
       motor1->run(BACKWARD);
-      delay(6700);
+      delay(REWIND_DURATION * 7); // NOT CURRENTLY USED. Instead, phone app tracks how many reverses are needed and sends multiple "2" signals.
       digitalWrite(DEBUG_LED, LOW);
       motor1->run(RELEASE);
     }
