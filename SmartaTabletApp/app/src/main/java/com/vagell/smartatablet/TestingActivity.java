@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class TestingActivity extends BaseActivity {
     private int mTrialCount = 0;
@@ -43,6 +42,8 @@ public class TestingActivity extends BaseActivity {
     private Handler mHandler = null;
     private boolean mTrialActive = false;
     private String mRecordingFileName = "";
+    private boolean mActiveTouch = false;
+    private long mLastTouchTimeMs = System.currentTimeMillis();
 
     public static final String PHASE1 = "phase1";
     public static final String PHASE2 = "phase2";
@@ -50,6 +51,7 @@ public class TestingActivity extends BaseActivity {
     private static final int TRIALS_PER_SESSION = 7;
     private static final int SEC_PER_TRIAL = 30;
     private static final int SEC_BETWEEN_TRIALS = 5;
+    private static final int MS_AFTER_TOUCH_BEFORE_NEXT_TRIAL = 500;
 
     public static String TESTING_COLOR_MAP_EXTRA = "testing_color_map";
     public static String TESTING_PHASE_EXTRA = "testing_phase";
@@ -118,7 +120,35 @@ public class TestingActivity extends BaseActivity {
         startNextTrial();
     }
 
+    /**
+     * Returns true if there's an active touch anywhere on the screen right now.
+     */
+    private boolean isActiveTouch() {
+        return mActiveTouch;
+    }
+
     private void startNextTrial() {
+        // If there's an active touch, wait for animal subject to lift hand before
+        // displaying next trial, or they may falsely trigger a response without ever
+        // seeing the trial.
+        long nowMs = System.currentTimeMillis();
+        long msSinceLastTouch = nowMs - mLastTouchTimeMs;
+        if (isActiveTouch() || msSinceLastTouch < MS_AFTER_TOUCH_BEFORE_NEXT_TRIAL) {
+            long delayMs = MS_AFTER_TOUCH_BEFORE_NEXT_TRIAL - msSinceLastTouch;
+
+            // Set a timer to try again momentarily
+            if (mTrialStartRunnable != null) {
+                mHandler.removeCallbacks(mTrialStartRunnable);
+            }
+            mTrialStartRunnable = new Runnable() {
+                public void run() {
+                    startNextTrial();
+                }
+            };
+            mHandler.postDelayed(mTrialStartRunnable, delayMs);
+            return;
+        }
+
         mTrialActive = true;
         mTrialCount++;
         if (mTrialCount == TRIALS_PER_SESSION) {
@@ -155,6 +185,17 @@ public class TestingActivity extends BaseActivity {
      * situations. It's not sensitive enough, so we check for intersections ourselves here.
      */
     private synchronized void handleTouch(MotionEvent touchEvent) {
+        // Track if there's any touch going on right now.
+        if (touchEvent.getPointerCount() == 1 &&
+            touchEvent.getAction() == MotionEvent.ACTION_UP ||
+            touchEvent.getAction() == MotionEvent.ACTION_POINTER_UP) {
+                mActiveTouch = false;
+                return;
+        } else {
+            mActiveTouch = true;
+            mLastTouchTimeMs = System.currentTimeMillis();
+        }
+
         if (!mTrialActive) {
             return;
         }
