@@ -20,8 +20,8 @@
 
 // Adjust these delay values to run the motor longer/shorter depending on the characteristics of your
 // SMARTA's conveyor belt, cups, and motor.
-#define DISPENSE_DURATION 600
-#define REWIND_DURATION 650
+#define DISPENSE_DURATION 620
+#define REWIND_DURATION 664
 
 SoftwareSerial tabletSerial(9, 5); // RX, TX
 

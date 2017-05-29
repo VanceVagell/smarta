@@ -170,13 +170,6 @@ public class BTMessageHandler extends Handler {
                             }
                         }
                     } else if (messageStr.startsWith("DISPENSE")) {
-                        // TODO extract this dupe code (also found in TestingActivity)
-                        // Play a sound so animals know they did it right.
-                        MediaPlayer player = MediaPlayer.create(mActivity, R.raw.whistle);
-                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        player.start();
-
-                        // Then dispense food.
                         ArduinoMessager.send(mActivity, ArduinoMessager.ARDUINO_DISPENSE);
                     } else if (messageStr.startsWith("CONVEYORBACKFAR")) {
                         ArduinoMessager.send(mActivity, ArduinoMessager.ARDUINO_BACKFAR);
