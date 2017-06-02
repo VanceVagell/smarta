@@ -3,7 +3,7 @@ Subject-Mediated Automatic Remote Testing Apparatus (SMARTA): an automated appro
 <br>
 <br>
 
-Raymond Vagell <sup>1</sup>*, Vance J. Vagell <sup>2</sup>, Rachel L. Jacobs <sup>3</sup>, James Gordon <sup>4</sup>, Andrea L. Baden<sup>5</sup>, <sup>6</sup>, <sup>7</sup>
+Raymond Vagell <sup>1</sup>*, Vance J. Vagell <sup>2</sup>, Rachel L. Jacobs <sup>3</sup>, James Gordon <sup>4</sup>, Andrea L. Baden<sup>5</sup>, <sup>6</sup>, <sup>7</sup>.
 <br>
 <br>
 
