@@ -25,5 +25,7 @@ Raymond Vagell <sup>1</sup>*, Vance J. Vagell <sup>2</sup>, Rachel L. Jacobs <su
 <sup>6</sup> Departments of Anthropology and Biology, The Graduate Center of the City University of New York 
 
 <sup>7</sup> The New York Consortium in Evolutionary Primatology
+<br>
+<br>
 
 Copyright 2017
