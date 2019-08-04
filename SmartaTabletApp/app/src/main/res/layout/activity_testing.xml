@@ -5,23 +5,26 @@
     android:id="@+id/testing_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ff000000"
     android:keepScreenOn="true"
     tools:context="com.vagell.smartatablet.TrainingActivity">
 
     <GridLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:background="@color/testing_dividers"
         android:columnCount="3"
         android:rowCount="1">
 
         <RelativeLayout
-            android:layout_width="590dp"
+            android:layout_width="150dp"
             android:layout_height="match_parent">
             <FrameLayout
                 android:id="@+id/left_color_block"
-                android:layout_width="400dp"
-                android:layout_height="400dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:background="#ff000000"></FrameLayout>
@@ -30,18 +33,18 @@
 
         <!-- Border -->
         <FrameLayout
-            android:layout_width="100dp"
+            android:layout_width="120dp"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"></FrameLayout>
 
         <RelativeLayout
-            android:layout_width="590dp"
+            android:layout_width="150dp"
             android:layout_height="match_parent">
             <FrameLayout
                 android:id="@+id/right_color_block"
-                android:layout_width="400dp"
-                android:layout_height="400dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:background="#ff000000"></FrameLayout>

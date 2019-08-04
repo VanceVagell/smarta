@@ -5,7 +5,7 @@ android {
     buildToolsVersion '25.0.0'
 
     defaultConfig {
-        applicationId "com.vagell.smartatablet"
+        applicationId "com.vagell.smartatablet.mouselemur"
         minSdkVersion 19
         targetSdkVersion 20
         versionCode 1
