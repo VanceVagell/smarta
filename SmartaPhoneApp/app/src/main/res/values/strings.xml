@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SMARTA Remote</string>
+    <string name="app_name">Remote</string>
 
     <string-array name="subjects_array">
-        <item>Amor Jr.</item>
+        <!-- Ruffed lemur names TODO: Make names user configurable.  -->
+        <!-- <item>Amor Jr.</item>
         <item>Antlia</item>
         <item>Archie</item>
         <item>Astro</item>
@@ -42,7 +43,29 @@
         <item>Ravo</item>
         <item>Rees</item>
         <item>Sally</item>
-        <item>Titan</item>
+        <item>Titan</item> -->
+
+        <!-- Mouse lemur names TODO: Make names user configurable. -->
+        <item>Mushmelon</item>
+        <item>Joe Pye</item>
+        <item>Butternut</item>
+        <item>Bluebell</item>
+        <item>Pipkin</item>
+        <item>Dogbane</item>
+        <item>Foxglove</item>
+        <item>Shiso</item>
+        <item>Huckleberry</item>
+        <item>Tzatziki</item>
+        <item>Hurtleberry</item>
+        <item>Butterbur</item>
+        <item>Sweet Annie</item>
+        <item>Loblolly</item>
+        <item>Snapdragon</item>
+        <item>Teazel</item>
+        <item>Pumpernickel</item>
+        <item>Bee Balm</item>
+
+        <!-- Spare names in case new animals are born / arrive before we can update app -->
         <item>Subject 1</item>
         <item>Subject 2</item>
         <item>Subject 3</item>
